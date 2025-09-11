@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Delícias da Cássia • Pedidos</title>
+  <style>
+    :root{--bg:#f7f5ef;--ink:#222;--muted:#666;--card:#fff;--brand:#000;--line:#e7e1d2}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial}
+    header{position:sticky;top:0;background:var(--brand);color:#fff;padding:14px 16px;z-index:10}
+    header .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    header h1{margin:0;font-size:18px;letter-spacing:.5px}
+    .gear{background:#fff;color:#000;border:none;border-radius:10px;padding:8px 10px;cursor:pointer}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:14px}
+    @media(max-width:980px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+    h2{margin:6px 0 10px;font-size:16px;letter-spacing:.06em;text-transform:uppercase}
+    .muted{color:var(--muted);font-size:13px}
+    .item{display:grid;grid-template-columns:1fr 90px 90px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+    .item:last-child{border-bottom:0}
+    .name{font-weight:500}
+    .price{text-align:right;color:#333}
+    .qty{display:flex;gap:6px;justify-content:flex-end;align-items:center}
+    .qty button{width:28px;height:28px;border:1px solid #ccc;background:#fff;border-radius:8px;cursor:pointer}
+    .qty input{width:46px;text-align:center;border:1px solid #ccc;border-radius:8px;height:28px}
+    .pill{display:inline-block;padding:4px 8px;border:1px solid #ddd;border-radius:999px;font-size:12px;color:#555;background:#fafafa}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    label{font-size:14px;color:#333}
+    input[type=text],input[type=tel],select,textarea{width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:10px;background:#fff}
+    textarea{min-height:84px}
+    .cart{position:sticky;top:70px}
+    .cart .row{display:flex;justify-content:space-between;margin:6px 0;color:#333}
+    .cart .row.total{font-weight:700;font-size:18px;border-top:1px solid #eee;padding-top:8px}
+    .btn{display:inline-flex;justify-content:center;align-items:center;width:100%;padding:14px 16px;border:none;border-radius:12px;background:#111;color:#fff;font-weight:700;cursor:pointer;margin-top:8px;font-size:16px}
+    .btn.small{padding:10px 12px;font-size:14px}
+    .small{font-size:12px;color:#666;margin-top:6px}
+    .hide{display:none}
+    footer{padding:26px 16px;text-align:center;color:#888}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:16px}
+    .modal .box{background:#fff;max-width:720px;width:100%;border-radius:14px;padding:16px;border:1px solid #eee}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    th,td{border:1px solid #eee;padding:8px;text-align:left}
+    th{background:#fafafa}
+  </style>
+</head>
+<body>
+<header>
+  <div class="row">
+    <h1 id="titulo">DELÍCIAS DA CÁSSIA • Pedidos</h1>
+    <button class="gear" onclick="openSettings()">⚙️ Configurar</button>
+  </div>
+</header>
+
+<div class="wrap grid">
+  <main class="card">
+    <div class="two" style="align-items:center;margin-bottom:6px">
+      <div><span class="pill" id="status">Aberto • 10h–20h</span></div>
+      <div style="text-align:right"><span class="pill">Entrega a partir de R$ <span id="entregaBase">0,00</span></span></div>
+    </div>
+
+    <section id="pratos">
+      <h2>Pratos Individuais</h2>
+      <div class="item"><div class="name">Mini Empadão de Frango com Requeijão</div><div class="price" data-price="18.00">R$ 18,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Lasanha</div><div class="price" data-price="18.00">R$ 18,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Escondidinho de Charque</div><div class="price" data-price="18.00">R$ 18,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Macarrão na Pressão</div><div class="price" data-price="15.00">R$ 15,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+    </section>
+
+    <section id="porcoes-ind">
+      <h2>Porções Individuais <span class="muted">R$ 20,00</span></h2>
+      <div class="muted" style="margin:-4px 0 8px">Serve 1 pessoa • Acompanha: arroz, farofa e vinagrete</div>
+    </section>
+
+    <section id="porcoes-500">
+      <h2>Porções (500 ml) <span class="muted">R$ 30,00</span></h2>
+      <div class="muted" style="margin:-4px 0 8px">Servem até 2 pessoas • Acompanha: arroz, farofa e vinagrete</div>
+    </section>
+
+    <section id="porcoes-1000">
+      <h2>Porções (1000 ml) <span class="muted">R$ 55,00</span></h2>
+      <div class="muted" style="margin:-4px 0 8px">Servem até 4 pessoas • Acompanha: arroz, farofa e vinagrete</div>
+    </section>
+
+    <section id="extras">
+      <h2>Porções Extras</h2>
+      <div class="item"><div class="name">Arroz P</div><div class="price" data-price="4.00">R$ 4,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Arroz G</div><div class="price" data-price="8.00">R$ 8,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Farofa</div><div class="price" data-price="4.00">R$ 4,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Embalagem</div><div class="price" data-price="2.00">R$ 2,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+    </section>
+
+    <section id="sobremesa">
+      <h2>Sobremesa</h2>
+      <div class="item"><div class="name">Pudim de Leite</div><div class="price" data-price="7.00">R$ 7,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+    </section>
+
+    <section id="bebidas">
+      <h2>Bebidas</h2>
+      <div class="item"><div class="name">Coca-Cola Lata 350 ml</div><div class="price" data-price="5.00">R$ 5,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Guaraná Antarctica Lata 350 ml</div><div class="price" data-price="5.00">R$ 5,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Fanta Lata 350 ml</div><div class="price" data-price="5.00">R$ 5,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Coca-Cola PET 1 L</div><div class="price" data-price="8.00">R$ 8,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Guaraná Antarctica PET 1 L</div><div class="price" data-price="8.00">R$ 8,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Coca-Cola PET 2 L</div><div class="price" data-price="13.00">R$ 13,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+    </section>
+  </main>
+
+  <aside class="card cart">
+    <h2>Seu Pedido</h2>
+    <div id="cartItems" class="muted">Nenhum item ainda.</div>
+    <div class="row"><span>Subtotal</span><span id="subtotal">R$ 0,00</span></div>
+    <div class="row"><span>Entrega</span><span id="frete">R$ 0,00</span></div>
+    <div class="row total"><span>Total</span><span id="total">R$ 0,00</span></div>
+
+    <div style="margin-top:10px">
+      <h2>Entrega ou Retirada</h2>
+      <select id="tipo" onchange="onTipoChange()">
+        <option value="retirada">Retirada no local</option>
+        <option value="entrega">Entrega</option>
+      </select>
+      <div id="enderecoBox" class="hide" style="margin-top:10px">
+        <div class="two">
+          <div><label>Rua</label><input id="rua" type="text" placeholder="Rua, nº"></div>
+          <div><label>Bairro</label><input id="bairro" type="text" placeholder="Bairro" oninput="autoTaxaBairro()"></div>
+        </div>
+        <div class="two" style="margin-top:8px">
+          <div><label>Complemento</label><input id="compl" type="text" placeholder="Apto/Casa/Ref."></div>
+          <div><label>Taxa de entrega (R$)</label><input id="taxa" type="text" placeholder="Ex.: 7,00" oninput="recalc()"></div>
+        </div>
+        <div class="small">A taxa é preenchida automaticamente quando o bairro bater com a tabela configurada.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:10px">
+      <h2>Seus Dados</h2>
+      <div class="two">
+        <div><label>Nome</label><input id="nome" type="text" placeholder="Seu nome"></div>
+        <div><label>WhatsApp</label><input id="fone" type="tel" placeholder="(DDD) 9xxxx-xxxx"></div>
+      </div>
+      <div style="margin-top:8px">
+        <label>Observações</label>
+        <textarea id="obs" placeholder="Ex.: sem coentro, entregar às 12h..."></textarea>
+      </div>
+    </div>
+
+    <div style="margin-top:10px">
+      <h2>Pagamento</h2>
+      <select id="pagamento" onchange="onPagamentoChange()">
+        <option value="pix">PIX</option>
+        <option value="dinheiro">Dinheiro</option>
+        <option value="cartao">Cartão (na entrega/retirada)</option>
+      </select>
+      <div id="trocoBox" class="hide" style="margin-top:8px">
+        <label>Troco para (R$)</label>
+        <input id="troco" type="text" placeholder="Ex.: 50,00">
+      </div>
+    </div>
+
+    <button class="btn" onclick="finalizar()">Enviar pedido via WhatsApp</button>
+    <div class="small">Ao clicar, seu WhatsApp abrirá com o resumo pronto para enviar.</div>
+  </aside>
+</div>
+
+<footer><div class="small">Delícias da Cássia • Mustardinha - Recife • © 2025</div></footer>
+
+<!-- Configurações (inclui tabela de taxas por bairro) -->
+<div class="modal" id="modal">
+  <div class="box">
+    <h2>Configurações</h2>
+    <div class="two">
+      <div><label>Nome da Loja</label><input id="loja" type="text" placeholder="Delícias da Cássia"></div>
+      <div><label>WhatsApp do Negócio</label><input id="whats" type="text" placeholder="+55819XXXXXXXX"></div>
+    </div>
+    <div class="two" style="margin-top:8px">
+      <div><label>Texto de status</label><input id="statusTxt" type="text" placeholder="Aberto • 10h–20h"></div>
+      <div><label>Entrega base (R$)</label><input id="entBase" type="text" placeholder="0,00"></div>
+    </div>
+
+    <h3 style="margin:14px 0 6px">Taxa fixa por bairro</h3>
+    <div class="two">
+      <div><label>Bairro</label><input id="bairroNome" type="text" placeholder="Ex.: Mustardinha"></div>
+      <div><label>Taxa (R$)</label><input id="bairroTaxa" type="text" placeholder="Ex.: 7,00"></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-start;margin-top:8px">
+      <button class="btn small" onclick="addBairro()">Adicionar</button>
+      <button class="btn small" style="background:#777" onclick="resetBairros()">Limpar lista</button>
+    </div>
+    <table id="tabelaBairros">
+      <thead><tr><th>Bairro</th><th>Taxa (R$)</th><th>Ações</th></tr></thead>
+      <tbody></tbody>
+    </table>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
+      <button class="btn" onclick="saveSettings()">Salvar</button>
+      <button class="btn" style="background:#777" onclick="closeSettings()">Fechar</button>
+    </div>
+    <div class="small">As configurações ficam salvas no seu aparelho.</div>
+  </div>
+</div>
+
+<script>
+// ====== MENU ======
+const bases=["Feijoada","Dobradinha","Sarapatel","Marisco"];
+function addRows(sectionId,price){
+  const el=document.getElementById(sectionId);
+  bases.forEach(n=>{
+    const d=document.createElement('div'); d.className='item';
+    d.innerHTML=`<div class="name">${n}</div>
+      <div class="price" data-price="${price.toFixed(2)}">R$ ${price.toFixed(2).replace('.',',')}</div>
+      <div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div>`;
+    el.appendChild(d);
+  });
+}
+addRows('porcoes-ind',20.00); addRows('porcoes-500',30.00); addRows('porcoes-1000',55.00);
+
+function chg(btn,delta){const i=btn.parentElement.querySelector('input'); let v=parseInt(i.value||0)+delta; if(v<0)v=0; i.value=v; recalc();}
+function parseMoney(v){ if(!v) return 0; v=(''+v).replace('R$','').replace('.','').replace(',','.'); v=parseFloat(v); return isNaN(v)?0:v; }
+function formatBR(n){ return 'R$ '+n.toFixed(2).replace('.',','); }
+function recalc(){
+  const items=[...document.querySelectorAll('.item')]; let subtotal=0; const list=[];
+  items.forEach(it=>{ const q=parseInt(it.querySelector('input').value||0);
+    if(q>0){ const name=it.querySelector('.name').textContent.trim(); const price=parseFloat(it.querySelector('.price').dataset.price);
+      subtotal+=price*q; list.push(`${q}× ${name} — ${formatBR(price)}`);
+    }});
+  const taxa=parseMoney(document.getElementById('taxa')?.value);
+  document.getElementById('cartItems').innerHTML=list.length? list.map(x=>'• '+x).join('<br>') : 'Nenhum item ainda.';
+  document.getElementById('subtotal').textContent=formatBR(subtotal);
+  document.getElementById('frete').textContent=formatBR(taxa||0);
+  document.getElementById('total').textContent=formatBR(subtotal+(taxa||0));
+}
+function onTipoChange(){const tipo=document.getElementById('tipo').value; document.getElementById('enderecoBox').classList.toggle('hide', tipo!=='entrega'); recalc();}
+function onPagamentoChange(){const v=document.getElementById('pagamento').value; document.getElementById('trocoBox').classList.toggle('hide', v!=='dinheiro');}
+
+// ====== CONFIGURAÇÕES ======
+function openSettings(){document.getElementById('modal').style.display='flex'; loadSettingsUI();}
+function closeSettings(){document.getElementById('modal').style.display='none';}
+function saveSettings(){
+  localStorage.setItem('loja', document.getElementById('loja').value.trim());
+  localStorage.setItem('whats', document.getElementById('whats').value.trim());
+  localStorage.setItem('status', document.getElementById('statusTxt').value.trim());
+  localStorage.setItem('entBase', document.getElementById('entBase').value.trim());
+  const tbl = readTabelaBairros(); // salva bairros
+  localStorage.setItem('bairrosTaxas', JSON.stringify(tbl));
+  applySettings(); closeSettings();
+}
+function applySettings(){
+  const loja=localStorage.getItem('loja')||'Delícias da Cássia';
+  const status=localStorage.getItem('status')||'Aberto • 10h–20h';
+  const entBase=localStorage.getItem('entBase')||'0,00';
+  document.title=loja+' • Pedidos';
+  document.getElementById('titulo').textContent=loja+' • Pedidos';
+  document.getElementById('status').textContent=status;
+  document.getElementById('entregaBase').textContent=entBase;
+}
+applySettings();
+
+// ====== TABELA DE BAIRROS (Config) ======
+function loadSettingsUI(){
+  document.getElementById('loja').value=localStorage.getItem('loja')||'Delícias da Cássia';
+  document.getElementById('whats').value=localStorage.getItem('whats')||'';
+  document.getElementById('statusTxt').value=localStorage.getItem('status')||'Aberto • 10h–20h';
+  document.getElementById('entBase').value=localStorage.getItem('entBase')||'0,00';
+  // carrega bairros
+  const data = JSON.parse(localStorage.getItem('bairrosTaxas')||'[]');
+  const tbody = document.querySelector('#tabelaBairros tbody');
+  tbody.innerHTML='';
+  data.forEach((row,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML = `<td><input type="text" value="${row.bairro}"></td>
+                    <td><input type="text" value="${row.taxa}"></td>
+                    <td><button class="btn small" onclick="delRow(this)">Remover</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+function readTabelaBairros(){
+  const rows=[...document.querySelectorAll('#tabelaBairros tbody tr')];
+  return rows.map(tr=>{
+    const tds=tr.querySelectorAll('td');
+    return { bairro: tds[0].querySelector('input').value.trim(), taxa: tds[1].querySelector('input').value.trim() };
+  }).filter(r=>r.bairro);
+}
+function addBairro(){
+  const b = document.getElementById('bairroNome').value.trim();
+  const t = document.getElementById('bairroTaxa').value.trim();
+  if(!b||!t){ alert('Preencha bairro e taxa.'); return; }
+  const tbody = document.querySelector('#tabelaBairros tbody');
+  const tr=document.createElement('tr');
+  tr.innerHTML = `<td><input type="text" value="${b}"></td>
+                  <td><input type="text" value="${t}"></td>
+                  <td><button class="btn small" onclick="delRow(this)">Remover</button></td>`;
+  tbody.appendChild(tr);
+  document.getElementById('bairroNome').value='';
+  document.getElementById('bairroTaxa').value='';
+}
+function delRow(btn){ btn.closest('tr').remove(); }
+function resetBairros(){ document.querySelector('#tabelaBairros tbody').innerHTML=''; }
+
+// ====== AUTO-TAXA POR BAIRRO ======
+function normalize(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(); }
+function autoTaxaBairro(){
+  const mapa = JSON.parse(localStorage.getItem('bairrosTaxas')||'[]');
+  const input = document.getElementById('bairro');
+  const val = normalize(input.value);
+  let taxaVal = '';
+  for(const row of mapa){
+    if(normalize(row.bairro)===val){
+      taxaVal = row.taxa;
+      break;
+    }
+  }
+  if(taxaVal){
+    document.getElementById('taxa').value = taxaVal;
+    recalc();
+  }
+}
+
+// ====== FINALIZAR (WhatsApp) ======
+function finalizar(){
+  recalc();
+  const whats=(localStorage.getItem('whats')||'').replace('+','').replace(/\D/g,'');
+  if(!whats){ alert('Configure o WhatsApp do negócio: toque em ⚙️ Configurar.'); return; }
+  const tipo=document.getElementById('tipo').value;
+  const nome=document.getElementById('nome').value.trim();
+  const fone=document.getElementById('fone').value.trim();
+  const obs=document.getElementById('obs').value.trim();
+  const pagamento=document.getElementById('pagamento').value;
+  const troco=document.getElementById('troco').value.trim();
+  const rua=document.getElementById('rua').value.trim();
+  const bairro=document.getElementById('bairro').value.trim();
+  const compl=document.getElementById('compl').value.trim();
+  const subtotal=document.getElementById('subtotal').textContent;
+  const frete=document.getElementById('frete').textContent;
+  const total=document.getElementById('total').textContent;
+  const cartLines=document.getElementById('cartItems').innerHTML.replaceAll('<br>','\n');
+  if(!nome){ alert('Informe seu nome.'); return; }
+  let msg=`*Pedido Online*%%`;
+  msg+=`*Cliente:* ${nome}%`;
+  if(fone) msg+=`*WhatsApp:* ${fone}%`;
+  msg+=`*Tipo:* ${tipo==='entrega'?'Entrega':'Retirada'}%`;
+  if(tipo==='entrega'){ msg+=`*Endereço:* ${rua}, ${bairro} (${compl})%`; }
+  msg+=`%*Itens:*%${cartLines}%`;
+  msg+=`%*Subtotal:* ${subtotal}%*Entrega:* ${frete}%*Total:* ${total}%`;
+  msg+=`%*Pagamento:* ${pagamento.toUpperCase()}`;
+  if(pagamento==='dinheiro' && troco){ msg+=` (troco para ${troco})`; }
+  if(obs){ msg+=`%*Obs.:* ${obs}`; }
+  const encoded=encodeURIComponent(msg.replaceAll('%','\n'));
+  const url=`https://wa.me/${whats}?text=${encoded}`;
+  window.open(url,'_blank');
+}
+
+// init
+onTipoChange(); onPagamentoChange(); recalc();
+</script>
+</body>
+</html>
