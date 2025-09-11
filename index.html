@@ -11,7 +11,6 @@
     header{position:sticky;top:0;background:var(--brand);color:#fff;padding:14px 16px;z-index:10}
     header .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
     header h1{margin:0;font-size:18px;letter-spacing:.5px}
-    .gear{background:#fff;color:#000;border:none;border-radius:10px;padding:8px 10px;cursor:pointer;display:none} /* oculto por padrão */
     .wrap{max-width:1100px;margin:0 auto;padding:16px}
     .grid{display:grid;grid-template-columns:1fr 360px;gap:14px}
     @media(max-width:980px){.grid{grid-template-columns:1fr}}
@@ -35,30 +34,24 @@
     .cart .row.total{font-weight:700;font-size:18px;border-top:1px solid #eee;padding-top:8px}
     .btn{display:inline-flex;justify-content:center;align-items:center;width:100%;padding:14px 16px;border:none;border-radius:12px;background:#111;color:#fff;font-weight:700;cursor:pointer;margin-top:8px;font-size:16px}
     .btn[disabled]{opacity:.45;pointer-events:none}
-    .btn.small{padding:10px 12px;font-size:14px}
     .small{font-size:12px;color:#666;margin-top:6px}
     .hide{display:none}
     footer{padding:26px 16px;text-align:center;color:#888}
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:16px}
-    .modal .box{background:#fff;max-width:720px;width:100%;border-radius:14px;padding:16px;border:1px solid #eee}
-    table{width:100%;border-collapse:collapse;margin-top:8px}
-    th,td{border:1px solid #eee;padding:8px;text-align:left}
-    th{background:#fafafa}
   </style>
 </head>
 <body>
 <header>
   <div class="row">
     <h1 id="titulo">DELÍCIAS DA CÁSSIA • Pedidos</h1>
-    <button id="gearBtn" class="gear" onclick="openSettings()">⚙️ Configurar</button>
+    <span class="pill">Aberto • 10h–20h</span>
   </div>
 </header>
 
 <div class="wrap grid">
   <main class="card">
     <div class="two" style="align-items:center;margin-bottom:6px">
-      <div><span class="pill" id="status">Aberto • 10h–20h</span></div>
-      <div style="text-align:right"><span class="pill">Entrega conforme bairro</span></div>
+      <div><span class="pill">Entrega conforme bairro</span></div>
+      <div style="text-align:right"><span class="pill">WhatsApp: (81) 99186-2247</span></div>
     </div>
 
     <section id="pratos">
@@ -170,41 +163,6 @@
 
 <footer><div class="small">Delícias da Cássia • Mustardinha - Recife • © 2025</div></footer>
 
-<!-- Configurações (inclui tabela de taxas por bairro) -->
-<div class="modal" id="modal">
-  <div class="box">
-    <h2>Configurações</h2>
-    <div class="two">
-      <div><label>Nome da Loja</label><input id="loja" type="text" placeholder="Delícias da Cássia"></div>
-      <div><label>WhatsApp do Negócio</label><input id="whats" type="text" placeholder="+55819XXXXXXXX"></div>
-    </div>
-    <div class="two" style="margin-top:8px">
-      <div><label>Texto de status</label><input id="statusTxt" type="text" placeholder="Aberto • 10h–20h"></div>
-      <div><label>Entrega base (R$)</label><input id="entBase" type="text" placeholder="0,00"></div>
-    </div>
-
-    <h3 style="margin:14px 0 6px">Taxa fixa por bairro</h3>
-    <div class="two">
-      <div><label>Bairro</label><input id="bairroNome" type="text" placeholder="Ex.: Mustardinha"></div>
-      <div><label>Taxa (R$)</label><input id="bairroTaxa" type="text" placeholder="Ex.: 7,00"></div>
-    </div>
-    <div style="display:flex;gap:10px;justify-content:flex-start;margin-top:8px">
-      <button class="btn small" onclick="addBairro()">Adicionar</button>
-      <button class="btn small" style="background:#777" onclick="resetBairros()">Limpar lista</button>
-    </div>
-    <table id="tabelaBairros">
-      <thead><tr><th>Bairro</th><th>Taxa (R$)</th><th>Ações</th></tr></thead>
-      <tbody></tbody>
-    </table>
-
-    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
-      <button class="btn" onclick="saveSettings()">Salvar</button>
-      <button class="btn" style="background:#777" onclick="closeSettings()">Fechar</button>
-    </div>
-    <div class="small">As configurações ficam salvas no seu aparelho.</div>
-  </div>
-</div>
-
 <script>
 // ====== MENU ======
 const bases=["Feijoada","Dobradinha","Sarapatel","Marisco"];
@@ -246,93 +204,29 @@ function onPagamentoChange(){
   document.getElementById('trocoBox').classList.toggle('hide', v!=='dinheiro');
 }
 
-// ====== CONFIGURAÇÕES ======
-function openSettings(){document.getElementById('modal').style.display='flex'; loadSettingsUI();}
-function closeSettings(){document.getElementById('modal').style.display='none';}
-function saveSettings(){
-  localStorage.setItem('loja', document.getElementById('loja').value.trim());
-  localStorage.setItem('whats', document.getElementById('whats').value.trim());
-  localStorage.setItem('status', document.getElementById('statusTxt').value.trim());
-  localStorage.setItem('entBase', document.getElementById('entBase').value.trim());
-  const tbl = readTabelaBairros(); // salva bairros
-  localStorage.setItem('bairrosTaxas', JSON.stringify(tbl));
-  applySettings(); closeSettings();
-}
-function applySettings(){
-  const loja=localStorage.getItem('loja')||'Delícias da Cássia';
-  const status=localStorage.getItem('status')||'Aberto • 10h–20h';
-  document.title=loja+' • Pedidos';
-  document.getElementById('titulo').textContent=loja+' • Pedidos';
-  document.getElementById('status').textContent=status;
-  populateBairroSelect();
-}
-applySettings();
+// ====== BAIRROS FIXOS ======
+const BAIRROS = [
+  { bairro: "Mustardinha", taxa: "3,00" },
+  { bairro: "Mangueira", taxa: "4,00" },
+  { bairro: "Afogados", taxa: "4,00" },
+  { bairro: "Bongi", taxa: "4,00" },
+  { bairro: "San Martins", taxa: "5,00" }
+];
 
-// ====== TABELA DE BAIRROS (Config) ======
-function loadSettingsUI(){
-  document.getElementById('loja').value=localStorage.getItem('loja')||'Delícias da Cássia';
-  document.getElementById('whats').value=localStorage.getItem('whats')||'';
-  document.getElementById('statusTxt').value=localStorage.getItem('status')||'Aberto • 10h–20h';
-  document.getElementById('entBase').value=localStorage.getItem('entBase')||'0,00';
-  const data = JSON.parse(localStorage.getItem('bairrosTaxas')||'[]');
-  const tbody = document.querySelector('#tabelaBairros tbody');
-  tbody.innerHTML='';
-  data.forEach((row,i)=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML = `<td><input type="text" value="${row.bairro}"></td>
-                    <td><input type="text" value="${row.taxa}"></td>
-                    <td><button class="btn small" onclick="delRow(this)">Remover</button></td>`;
-    tbody.appendChild(tr);
-  });
-}
-function readTabelaBairros(){
-  const rows=[...document.querySelectorAll('#tabelaBairros tbody tr')];
-  return rows.map(tr=>{
-    const tds=tr.querySelectorAll('td');
-    return { bairro: tds[0].querySelector('input').value.trim(), taxa: tds[1].querySelector('input').value.trim() };
-  }).filter(r=>r.bairro);
-}
-function addBairro(){
-  const b = document.getElementById('bairroNome').value.trim();
-  const t = document.getElementById('bairroTaxa').value.trim();
-  if(!b||!t){ alert('Preencha bairro e taxa.'); return; }
-  const tbody = document.querySelector('#tabelaBairros tbody');
-  const tr=document.createElement('tr');
-  tr.innerHTML = `<td><input type="text" value="${b}"></td>
-                  <td><input type="text" value="${t}"></td>
-                  <td><button class="btn small" onclick="delRow(this)">Remover</button></td>`;
-  tbody.appendChild(tr);
-  document.getElementById('bairroNome').value='';
-  document.getElementById('bairroTaxa').value='';
-}
-function delRow(btn){ btn.closest('tr').remove(); }
-function resetBairros(){ document.querySelector('#tabelaBairros tbody').innerHTML=''; }
-
-// ====== SELECT DE BAIRROS (cliente) ======
 function populateBairroSelect(){
-  const data = JSON.parse(localStorage.getItem('bairrosTaxas')||'[]');
   const sel = document.getElementById('bairroSel');
   sel.innerHTML='';
-  if(!data.length){
-    const op=document.createElement('option');
-    op.value=''; op.textContent='Cadastre bairros na Configuração';
-    sel.appendChild(op);
-    document.getElementById('taxa').value='0';
-    document.getElementById('taxaView').textContent='R$ 0,00';
-    updateSendState();
-    return;
-  }
   const firstOpt=document.createElement('option');
   firstOpt.value=''; firstOpt.textContent='Selecione o bairro';
   sel.appendChild(firstOpt);
-  data.forEach(r=>{
+  BAIRROS.forEach(r=>{
     const op=document.createElement('option');
     op.value=r.bairro+'|'+r.taxa;
     op.textContent=r.bairro;
     sel.appendChild(op);
   });
-  updateSendState();
 }
+populateBairroSelect();
 
 function selecionarBairro(){
   const sel=document.getElementById('bairroSel');
@@ -356,21 +250,10 @@ function updateSendState(){
   send.disabled = !hasBairro;
 }
 
-// ====== PAINEL ADMIN (mostrar ⚙️ via ?admin=1) ======
-(function adminGate(){
-  const params=new URLSearchParams(location.search);
-  if(params.get('admin')==='1'){ localStorage.setItem('isAdmin','1'); }
-  if(params.get('logout')==='1'){ localStorage.removeItem('isAdmin'); }
-  if(localStorage.getItem('isAdmin')==='1'){
-    document.getElementById('gearBtn').style.display='inline-block';
-  }
-})();
-
 // ====== FINALIZAR (WhatsApp) ======
 function finalizar(){
   recalc();
-  const whats=(localStorage.getItem('whats')||'').replace('+','').replace(/\D/g,'');
-  if(!whats){ alert('Configure o WhatsApp do negócio: acesse ?admin=1 e toque em ⚙️'); return; }
+  const whats='5581991862247';
   const tipo=document.getElementById('tipo').value;
   const nome=document.getElementById('nome').value.trim();
   const fone=document.getElementById('fone').value.trim();
@@ -386,12 +269,12 @@ function finalizar(){
   const cartLines=document.getElementById('cartItems').innerHTML.replaceAll('<br>','\n');
   if(!nome){ alert('Informe seu nome.'); return; }
   if(tipo==='entrega' && !bairroTxt){ alert('Selecione o bairro.'); return; }
-  let msg=`*Pedido Online*%%`;
+  let msg=`*Delícias da Cássia*%%*Pedido Online*%%`;
   msg+=`*Cliente:* ${nome}%`;
   if(fone) msg+=`*WhatsApp:* ${fone}%`;
   msg+=`*Tipo:* ${tipo==='entrega'?'Entrega':'Retirada'}%`;
   if(tipo==='entrega'){ msg+=`*Endereço:* ${rua}, ${bairroTxt}%`; }
-  msg+=`%*Itens:*%${cartLines}%`;
+  msg+=`%*Itens:*%${cartLines||'-'}%`;
   msg+=`%*Subtotal:* ${subtotal}%*Entrega:* ${frete}%*Total:* ${total}%`;
   msg+=`%*Pagamento:* ${pagamento.toUpperCase()}`;
   if(pagamento==='dinheiro' && troco){ msg+=` (troco para ${troco})`; }
