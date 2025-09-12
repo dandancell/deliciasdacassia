@@ -1,16 +1,17 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Delícias da Cássia • Pedidos</title>
   <style>
     :root{--bg:#f7f5ef;--ink:#222;--muted:#666;--card:#fff;--brand:#000;--line:#e7e1d2}
     *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial}
-    header{position:sticky;top:0;background:var(--brand);color:#fff;padding:14px 16px;z-index:10}
-    header .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial}
+    header{position:sticky;top:0;background:var(--brand);color:#fff;padding:10px 16px 14px;z-index:10;text-align:center}
+    header img{height:84px;width:auto;display:block;margin:6px auto 4px}
     header h1{margin:0;font-size:18px;letter-spacing:.5px}
+    .pill{display:inline-block;padding:4px 8px;border:1px solid #ddd;border-radius:999px;font-size:12px;color:#555;background:#fafafa;margin-top:6px}
     .wrap{max-width:1100px;margin:0 auto;padding:16px}
     .grid{display:grid;grid-template-columns:1fr 360px;gap:14px}
     @media(max-width:980px){.grid{grid-template-columns:1fr}}
@@ -24,32 +25,32 @@
     .qty{display:flex;gap:6px;justify-content:flex-end;align-items:center}
     .qty button{width:28px;height:28px;border:1px solid #ccc;background:#fff;border-radius:8px;cursor:pointer}
     .qty input{width:46px;text-align:center;border:1px solid #ccc;border-radius:8px;height:28px}
-    .pill{display:inline-block;padding:4px 8px;border:1px solid #ddd;border-radius:999px;font-size:12px;color:#555;background:#fafafa}
-    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     label{font-size:14px;color:#333}
     input[type=text],input[type=tel],select,textarea{width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:10px;background:#fff}
     textarea{min-height:84px}
-    .cart{position:sticky;top:70px}
+    .cart{position:sticky;top:110px}
     .cart .row{display:flex;justify-content:space-between;margin:6px 0;color:#333}
     .cart .row.total{font-weight:700;font-size:18px;border-top:1px solid #eee;padding-top:8px}
     .btn{display:inline-flex;justify-content:center;align-items:center;width:100%;padding:14px 16px;border:none;border-radius:12px;background:#111;color:#fff;font-weight:700;cursor:pointer;margin-top:8px;font-size:16px}
     .btn[disabled]{opacity:.45;pointer-events:none}
-    .small{font-size:12px;color:#666;margin-top:6px}
-    .hide{display:none}
     footer{padding:26px 16px;text-align:center;color:#888}
+    .pixbox{border:1px dashed var(--line);background:#fcfbf7;border-radius:12px;padding:10px;margin-top:8px}
+    .pixgrid{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+    .copy{border:1px solid #ccc;background:#fff;border-radius:10px;padding:6px 10px;cursor:pointer}
+    .ok{color:#0a7a0a;font-weight:700}
+    .hide{display:none}
   </style>
 </head>
 <body>
 <header>
-  <div class="row">
-    <h1 id="titulo">DELÍCIAS DA CÁSSIA • Pedidos</h1>
-    <span class="pill">Aberto • 10h–20h</span>
-  </div>
+  <img src="logo.png" alt="Logo Delícias da Cássia">
+  <h1>DELÍCIAS DA CÁSSIA • Pedidos</h1>
+  <span class="pill">Aberto • 10h–20h</span>
 </header>
 
 <div class="wrap grid">
   <main class="card">
-    <div class="two" style="align-items:center;margin-bottom:6px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;margin-bottom:6px">
       <div><span class="pill">Entrega conforme bairro</span></div>
       <div style="text-align:right"><span class="pill">WhatsApp: (81) 99186-2247</span></div>
     </div>
@@ -65,16 +66,28 @@
     <section id="porcoes-ind">
       <h2>Porções Individuais <span class="muted">R$ 20,00</span></h2>
       <div class="muted" style="margin:-4px 0 8px">Serve 1 pessoa • Acompanha: arroz, farofa e vinagrete</div>
+      <div class="item"><div class="name">Feijoada</div><div class="price" data-price="20.00">R$ 20,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Dobradinha</div><div class="price" data-price="20.00">R$ 20,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Sarapatel</div><div class="price" data-price="20.00">R$ 20,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Marisco</div><div class="price" data-price="20.00">R$ 20,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
     </section>
 
     <section id="porcoes-500">
       <h2>Porções (500 ml) <span class="muted">R$ 30,00</span></h2>
       <div class="muted" style="margin:-4px 0 8px">Servem até 2 pessoas • Acompanha: arroz, farofa e vinagrete</div>
+      <div class="item"><div class="name">Feijoada</div><div class="price" data-price="30.00">R$ 30,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Dobradinha</div><div class="price" data-price="30.00">R$ 30,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Sarapatel</div><div class="price" data-price="30.00">R$ 30,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Marisco</div><div class="price" data-price="30.00">R$ 30,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
     </section>
 
     <section id="porcoes-1000">
       <h2>Porções (1000 ml) <span class="muted">R$ 55,00</span></h2>
       <div class="muted" style="margin:-4px 0 8px">Servem até 4 pessoas • Acompanha: arroz, farofa e vinagrete</div>
+      <div class="item"><div class="name">Feijoada</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Dobradinha</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Sarapatel</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">Marisco</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
     </section>
 
     <section id="extras">
@@ -115,14 +128,14 @@
         <option value="entrega">Entrega</option>
       </select>
       <div id="enderecoBox" class="hide" style="margin-top:10px">
-        <div class="two">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
           <div><label>Rua</label><input id="rua" type="text" placeholder="Rua, nº"></div>
           <div>
             <label>Bairro</label>
             <select id="bairroSel" onchange="selecionarBairro()"></select>
           </div>
         </div>
-        <div class="two" style="margin-top:8px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
           <div><label>Complemento</label><input id="compl" type="text" placeholder="Apto/Casa/Ref."></div>
           <div><label>Taxa de entrega</label><div id="taxaView" class="pill" style="height:40px;display:flex;align-items:center;justify-content:center">R$ 0,00</div></div>
         </div>
@@ -133,7 +146,7 @@
 
     <div style="margin-top:10px">
       <h2>Seus Dados</h2>
-      <div class="two">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div><label>Nome</label><input id="nome" type="text" placeholder="Seu nome"></div>
         <div><label>WhatsApp</label><input id="fone" type="tel" placeholder="(DDD) 9xxxx-xxxx"></div>
       </div>
@@ -150,6 +163,18 @@
         <option value="dinheiro">Dinheiro</option>
         <option value="cartao">Cartão (na entrega/retirada)</option>
       </select>
+
+      <!-- PIX só quando selecionado -->
+      <div id="pixBox" class="pixbox hide">
+        <div class="pixgrid">
+          <div><strong>Chave PIX:</strong> <span id="pixKey">81991862247</span></div>
+          <button class="copy" onclick="copyPix()">Copiar</button>
+        </div>
+        <div><strong>Banco:</strong> Stone</div>
+        <div><strong>Titular:</strong> Delícias da Cássia</div>
+        <div class="small ok">Envie o comprovante para confirmar o pedido.</div>
+      </div>
+
       <div id="trocoBox" class="hide" style="margin-top:8px">
         <label>Troco para (R$)</label>
         <input id="troco" type="text" placeholder="Ex.: 50,00">
@@ -164,20 +189,6 @@
 <footer><div class="small">Delícias da Cássia • Mustardinha - Recife • © 2025</div></footer>
 
 <script>
-// ====== MENU ======
-const bases=["Feijoada","Dobradinha","Sarapatel","Marisco"];
-function addRows(sectionId,price){
-  const el=document.getElementById(sectionId);
-  bases.forEach(n=>{
-    const d=document.createElement('div'); d.className='item';
-    d.innerHTML=`<div class="name">${n}</div>
-      <div class="price" data-price="${price.toFixed(2)}">R$ ${price.toFixed(2).replace('.',',')}</div>
-      <div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div>`;
-    el.appendChild(d);
-  });
-}
-addRows('porcoes-ind',20.00); addRows('porcoes-500',30.00); addRows('porcoes-1000',55.00);
-
 function chg(btn,delta){const i=btn.parentElement.querySelector('input'); let v=parseInt(i.value||0)+delta; if(v<0)v=0; i.value=v; recalc();}
 function parseMoney(v){ if(!v) return 0; v=(''+v).replace('R$','').replace('.','').replace(',','.'); v=parseFloat(v); return isNaN(v)?0:v; }
 function formatBR(n){ return 'R$ '+n.toFixed(2).replace('.',','); }
@@ -202,9 +213,8 @@ function onTipoChange(){
 function onPagamentoChange(){
   const v=document.getElementById('pagamento').value;
   document.getElementById('trocoBox').classList.toggle('hide', v!=='dinheiro');
+  document.getElementById('pixBox').classList.toggle('hide', v!=='pix');
 }
-
-// ====== BAIRROS FIXOS ======
 const BAIRROS = [
   { bairro: "Mustardinha", taxa: "3,00" },
   { bairro: "Mangueira", taxa: "4,00" },
@@ -212,7 +222,6 @@ const BAIRROS = [
   { bairro: "Bongi", taxa: "4,00" },
   { bairro: "San Martins", taxa: "5,00" }
 ];
-
 function populateBairroSelect(){
   const sel = document.getElementById('bairroSel');
   sel.innerHTML='';
@@ -227,7 +236,6 @@ function populateBairroSelect(){
   });
 }
 populateBairroSelect();
-
 function selecionarBairro(){
   const sel=document.getElementById('bairroSel');
   const val=sel.value;
@@ -240,8 +248,6 @@ function selecionarBairro(){
   recalc();
   updateSendState();
 }
-
-// ====== BLOQUEIO DO ENVIO ======
 function updateSendState(){
   const tipo=document.getElementById('tipo').value;
   const send=document.getElementById('sendBtn');
@@ -249,8 +255,12 @@ function updateSendState(){
   const hasBairro = !!document.getElementById('bairroSel').value;
   send.disabled = !hasBairro;
 }
-
-// ====== FINALIZAR (WhatsApp) ======
+function copyPix(){
+  const k = document.getElementById('pixKey').textContent.trim();
+  navigator.clipboard.writeText(k).then(()=>{
+    alert('Chave PIX copiada!');
+  });
+}
 function finalizar(){
   recalc();
   const whats='5581991862247';
@@ -279,12 +289,14 @@ function finalizar(){
   msg+=`%*Pagamento:* ${pagamento.toUpperCase()}`;
   if(pagamento==='dinheiro' && troco){ msg+=` (troco para ${troco})`; }
   if(obs){ msg+=`%*Obs.:* ${obs}`; }
+  if(pagamento==='pix'){ 
+    msg+=`%%*PIX para pagamento:*%• Chave: 81991862247%• Banco: Stone%• Titular: Delícias da Cássia`;
+    msg+=`%%*Atenção:* o pedido será confirmado mediante o envio do comprovante.`;
+  }
   const encoded=encodeURIComponent(msg.replaceAll('%','\n'));
   const url=`https://wa.me/${whats}?text=${encoded}`;
   window.open(url,'_blank');
 }
-
-// init
 onTipoChange(); onPagamentoChange(); recalc();
 </script>
 </body>
