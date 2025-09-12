@@ -29,7 +29,7 @@
     "coca_2l": true
   },
   "promo": {
-    "enabled": true,
+    "enabled": false,
     "text": "PROMO DO DIA: Porção 500 ml + Refrigerante lata por R$ 33,00!"
   },
   "branding": {
