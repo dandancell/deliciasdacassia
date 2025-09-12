@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Delícias da Cássia • Pedidos</title>
   <style>
-    :root{--bg:#f7f5ef;--ink:#222;--muted:#666;--card:#fff;--brand:#000;--line:#e7e1d2}
+    :root{--bg:#f7f5ef;--ink:#222;--muted:#666;--card:#fff;--brand:#000;--line:#e7e1d2;--accent:#111}
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial}
     header{position:sticky;top:0;background:var(--brand);color:#fff;padding:10px 16px 14px;z-index:10;text-align:center}
@@ -31,7 +31,7 @@
     .cart{position:sticky;top:110px}
     .cart .row{display:flex;justify-content:space-between;margin:6px 0;color:#333}
     .cart .row.total{font-weight:700;font-size:18px;border-top:1px solid #eee;padding-top:8px}
-    .btn{display:inline-flex;justify-content:center;align-items:center;width:100%;padding:14px 16px;border:none;border-radius:12px;background:#111;color:#fff;font-weight:700;cursor:pointer;margin-top:8px;font-size:16px}
+    .btn{display:inline-flex;justify-content:center;align-items:center;width:100%;padding:14px 16px;border:none;border-radius:12px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;margin-top:8px;font-size:16px}
     .btn[disabled]{opacity:.45;pointer-events:none}
     footer{padding:26px 16px;text-align:center;color:#888}
     .pixbox{border:1px dashed var(--line);background:#fcfbf7;border-radius:12px;padding:10px;margin-top:8px}
@@ -39,17 +39,26 @@
     .copy{border:1px solid #ccc;background:#fff;border-radius:10px;padding:6px 10px;cursor:pointer}
     .ok{color:#0a7a0a;font-weight:700}
     .hide{display:none}
+    .promo{background:#fff7d6;border:1px dashed #e5cf89;color:#5a4700;border-radius:12px;padding:10px;margin:10px 0;font-weight:600;text-align:center}
+
+    /* SOLD OUT */
+    .sold{opacity:.55}
+    .sold .price{ text-decoration: line-through; color:#999 }
+    .sold .qty{ display:none }
+    .sold .name::after{ content:"  (ESGOTADO)"; color:#a60000; font-weight:700; font-size:13px }
   </style>
 </head>
 <body>
 <header>
   <img src="logo.png" alt="Logo Delícias da Cássia">
   <h1>DELÍCIAS DA CÁSSIA • Pedidos</h1>
-  <span class="pill">Aberto • 10h–20h</span>
+  <span id="hoursPill" class="pill">Aberto • 10h–20h</span>
 </header>
 
 <div class="wrap grid">
   <main class="card">
+    <div id="promoBox" class="promo hide">PROMO</div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;margin-bottom:6px">
       <div><span class="pill">Entrega conforme bairro</span></div>
       <div style="text-align:right"><span class="pill">WhatsApp: (81) 99186-2247</span></div>
@@ -57,60 +66,60 @@
 
     <section id="pratos">
       <h2>Pratos Individuais</h2>
-      <div class="item"><div class="name">Mini Empadão de Frango com Requeijão</div><div class="price" data-price="18.00">R$ 18,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Lasanha</div><div class="price" data-price="18.00">R$ 18,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Escondidinho de Charque</div><div class="price" data-price="18.00">R$ 18,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Macarrão na Pressão</div><div class="price" data-price="15.00">R$ 15,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="empadao"><div class="name">Mini Empadão de Frango com Requeijão</div><div class="price" data-price="18.00">R$ 18,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="lasanha"><div class="name">Lasanha</div><div class="price" data-price="18.00">R$ 18,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="escondidinho"><div class="name">Escondidinho de Charque</div><div class="price" data-price="18.00">R$ 18,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="macarrao"><div class="name">Macarrão na Pressão</div><div class="price" data-price="15.00">R$ 15,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
     </section>
 
     <section id="porcoes-ind">
       <h2>Porções Individuais <span class="muted">R$ 20,00</span></h2>
       <div class="muted" style="margin:-4px 0 8px">Serve 1 pessoa • Acompanha: arroz, farofa e vinagrete</div>
-      <div class="item"><div class="name">Feijoada</div><div class="price" data-price="20.00">R$ 20,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Dobradinha</div><div class="price" data-price="20.00">R$ 20,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Sarapatel</div><div class="price" data-price="20.00">R$ 20,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Marisco</div><div class="price" data-price="20.00">R$ 20,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="feijoada_ind"><div class="name">Feijoada</div><div class="price" data-price="20.00">R$ 20,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="dobradinha_ind"><div class="name">Dobradinha</div><div class="price" data-price="20.00">R$ 20,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="sarapatel_ind"><div class="name">Sarapatel</div><div class="price" data-price="20.00">R$ 20,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="marisco_ind"><div class="name">Marisco</div><div class="price" data-price="20.00">R$ 20,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
     </section>
 
     <section id="porcoes-500">
       <h2>Porções (500 ml) <span class="muted">R$ 30,00</span></h2>
       <div class="muted" style="margin:-4px 0 8px">Servem até 2 pessoas • Acompanha: arroz, farofa e vinagrete</div>
-      <div class="item"><div class="name">Feijoada</div><div class="price" data-price="30.00">R$ 30,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Dobradinha</div><div class="price" data-price="30.00">R$ 30,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Sarapatel</div><div class="price" data-price="30.00">R$ 30,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Marisco</div><div class="price" data-price="30.00">R$ 30,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="feijoada_500"><div class="name">Feijoada</div><div class="price" data-price="30.00">R$ 30,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="dobradinha_500"><div class="name">Dobradinha</div><div class="price" data-price="30.00">R$ 30,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="sarapatel_500"><div class="name">Sarapatel</div><div class="price" data-price="30.00">R$ 30,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="marisco_500"><div class="name">Marisco</div><div class="price" data-price="30.00">R$ 30,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
     </section>
 
     <section id="porcoes-1000">
       <h2>Porções (1000 ml) <span class="muted">R$ 55,00</span></h2>
       <div class="muted" style="margin:-4px 0 8px">Servem até 4 pessoas • Acompanha: arroz, farofa e vinagrete</div>
-      <div class="item"><div class="name">Feijoada</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Dobradinha</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Sarapatel</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Marisco</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="feijoada_1000"><div class="name">Feijoada</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="dobradinha_1000"><div class="name">Dobradinha</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="sarapatel_1000"><div class="name">Sarapatel</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="marisco_1000"><div class="name">Marisco</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
     </section>
 
     <section id="extras">
       <h2>Porções Extras</h2>
-      <div class="item"><div class="name">Arroz P</div><div class="price" data-price="4.00">R$ 4,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Arroz G</div><div class="price" data-price="8.00">R$ 8,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Farofa</div><div class="price" data-price="4.00">R$ 4,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Embalagem</div><div class="price" data-price="2.00">R$ 2,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="arroz_p"><div class="name">Arroz P</div><div class="price" data-price="4.00">R$ 4,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="arroz_g"><div class="name">Arroz G</div><div class="price" data-price="8.00">R$ 8,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="farofa"><div class="name">Farofa</div><div class="price" data-price="4.00">R$ 4,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="embalagem"><div class="name">Embalagem</div><div class="price" data-price="2.00">R$ 2,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
     </section>
 
     <section id="sobremesa">
       <h2>Sobremesa</h2>
-      <div class="item"><div class="name">Pudim de Leite</div><div class="price" data-price="7.00">R$ 7,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="pudim"><div class="name">Pudim de Leite</div><div class="price" data-price="7.00">R$ 7,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
     </section>
 
     <section id="bebidas">
       <h2>Bebidas</h2>
-      <div class="item"><div class="name">Coca-Cola Lata 350 ml</div><div class="price" data-price="5.00">R$ 5,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Guaraná Antarctica Lata 350 ml</div><div class="price" data-price="5.00">R$ 5,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Fanta Lata 350 ml</div><div class="price" data-price="5.00">R$ 5,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Coca-Cola PET 1 L</div><div class="price" data-price="8.00">R$ 8,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Guaraná Antarctica PET 1 L</div><div class="price" data-price="8.00">R$ 8,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">Coca-Cola PET 2 L</div><div class="price" data-price="13.00">R$ 13,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="coca_lata"><div class="name">Coca-Cola Lata 350 ml</div><div class="price" data-price="5.00">R$ 5,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="guarana_lata"><div class="name">Guaraná Antarctica Lata 350 ml</div><div class="price" data-price="5.00">R$ 5,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="fanta_lata"><div class="name">Fanta Lata 350 ml</div><div class="price" data-price="5.00">R$ 5,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="coca_1l"><div class="name">Coca-Cola PET 1 L</div><div class="price" data-price="8.00">R$ 8,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="guarana_1l"><div class="name">Guaraná Antarctica PET 1 L</div><div class="price" data-price="8.00">R$ 8,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="coca_2l"><div class="name">Coca-Cola PET 2 L</div><div class="price" data-price="13.00">R$ 13,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
     </section>
   </main>
 
@@ -186,16 +195,19 @@
   </aside>
 </div>
 
-<footer><div class="small">Delícias da Cássia • Mustardinha - Recife • © 2025</div></footer>
+<footer>
+  <div id="footerBrand" class="small">Delícias da Cássia • Mustardinha - Recife • © 2025 • Instagram: @deliciasdacassia • Atendimento 10h–20h</div>
+</footer>
 
 <script>
+// ====== QUANTIDADE / CÁLCULO ======
 function chg(btn,delta){const i=btn.parentElement.querySelector('input'); let v=parseInt(i.value||0)+delta; if(v<0)v=0; i.value=v; recalc();}
 function parseMoney(v){ if(!v) return 0; v=(''+v).replace('R$','').replace('.','').replace(',','.'); v=parseFloat(v); return isNaN(v)?0:v; }
 function formatBR(n){ return 'R$ '+n.toFixed(2).replace('.',','); }
 function recalc(){
   const items=[...document.querySelectorAll('.item')]; let subtotal=0; const list=[];
-  items.forEach(it=>{ const q=parseInt(it.querySelector('input').value||0);
-    if(q>0){ const name=it.querySelector('.name').textContent.trim(); const price=parseFloat(it.querySelector('.price').dataset.price);
+  items.forEach(it=>{ const q=parseInt(it.querySelector('input')?.value||0);
+    if(q>0){ const name=it.querySelector('.name').textContent.trim(); const price=parseFloat(it.querySelector('.price')?.dataset.price||'0');
       subtotal+=price*q; list.push(`${q}× ${name} — ${formatBR(price)}`);
     }});
   const taxa=parseMoney(document.getElementById('taxa')?.value);
@@ -205,15 +217,12 @@ function recalc(){
   document.getElementById('total').textContent=formatBR(subtotal+(taxa||0));
   updateSendState();
 }
+
+// ====== ENTREGA / BAIRROS ======
 function onTipoChange(){
   const tipo=document.getElementById('tipo').value;
   document.getElementById('enderecoBox').classList.toggle('hide', tipo!=='entrega');
   updateSendState();
-}
-function onPagamentoChange(){
-  const v=document.getElementById('pagamento').value;
-  document.getElementById('trocoBox').classList.toggle('hide', v!=='dinheiro');
-  document.getElementById('pixBox').classList.toggle('hide', v!=='pix');
 }
 const BAIRROS = [
   { bairro: "Mustardinha", taxa: "3,00" },
@@ -240,14 +249,14 @@ function selecionarBairro(){
   const sel=document.getElementById('bairroSel');
   const val=sel.value;
   let taxa='0,00';
-  if(val && val.includes('|')){
-    taxa = val.split('|')[1];
-  }
+  if(val && val.includes('|')){ taxa = val.split('|')[1]; }
   document.getElementById('taxa').value = taxa;
   document.getElementById('taxaView').textContent = 'R$ ' + (''+taxa).replace('.',',');
   recalc();
   updateSendState();
 }
+
+// ====== LIBERAR ENVIO ======
 function updateSendState(){
   const tipo=document.getElementById('tipo').value;
   const send=document.getElementById('sendBtn');
@@ -255,12 +264,19 @@ function updateSendState(){
   const hasBairro = !!document.getElementById('bairroSel').value;
   send.disabled = !hasBairro;
 }
+
+// ====== PAGAMENTO ======
+function onPagamentoChange(){
+  const v=document.getElementById('pagamento').value;
+  document.getElementById('trocoBox').classList.toggle('hide', v!=='dinheiro');
+  document.getElementById('pixBox').classList.toggle('hide', v!=='pix');
+}
 function copyPix(){
   const k = document.getElementById('pixKey').textContent.trim();
-  navigator.clipboard.writeText(k).then(()=>{
-    alert('Chave PIX copiada!');
-  });
+  navigator.clipboard.writeText(k).then(()=>{ alert('Chave PIX copiada!'); });
 }
+
+// ====== FINALIZAR (WhatsApp) ======
 function finalizar(){
   recalc();
   const whats='5581991862247';
@@ -297,7 +313,56 @@ function finalizar(){
   const url=`https://wa.me/${whats}?text=${encoded}`;
   window.open(url,'_blank');
 }
-onTipoChange(); onPagamentoChange(); recalc();
+
+// ====== ESTOQUE / PROMO / BRANDING ======
+async function carregarEstoque(){
+  try{
+    const r = await fetch('estoque.json?nocache='+Date.now(), {cache:'no-store'});
+    if(!r.ok) return;
+    const data = await r.json();
+    aplicarEsgotados(data?.itens || {});
+    aplicarPromo(data?.promo || {});
+    aplicarBranding(data?.branding || {});
+  }catch(e){ /* ignora */ }
+}
+function aplicarEsgotados(map){
+  Object.entries(map).forEach(([id, disponivel])=>{
+    const el = document.querySelector(`.item[data-id="${id}"]`);
+    if(!el) return;
+    if(disponivel === false){
+      el.classList.add('sold');
+      const input = el.querySelector('input[type="number"]');
+      if(input){ input.value = 0; input.disabled = true; }
+      el.querySelectorAll('button').forEach(b=> b.disabled = true);
+    }else{
+      el.classList.remove('sold');
+      const input = el.querySelector('input[type="number"]');
+      if(input){ input.disabled = false; }
+      el.querySelectorAll('button').forEach(b=> b.disabled = false);
+    }
+  });
+  if(typeof recalc === 'function') recalc();
+}
+function aplicarPromo(promo){
+  const box = document.getElementById('promoBox');
+  if(promo && promo.enabled && promo.text){
+    box.textContent = promo.text;
+    box.classList.remove('hide');
+  }else{
+    box.classList.add('hide');
+  }
+}
+function aplicarBranding(b){
+  const hours = b?.hours || '10h–20h';
+  const insta = b?.instagram || '@deliciasdacassia';
+  const loc = b?.location || 'Mustardinha - Recife';
+  document.getElementById('hoursPill').textContent = 'Aberto • ' + hours;
+  document.getElementById('footerBrand').textContent =
+    `Delícias da Cássia • ${loc} • © 2025 • Instagram: ${insta} • Atendimento ${hours}`;
+}
+// init
+populateBairroSelect();
+onTipoChange(); onPagamentoChange(); recalc(); carregarEstoque(); setInterval(carregarEstoque,60000);
 </script>
 </body>
 </html>
