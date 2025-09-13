@@ -1,9 +1,9 @@
 {
   "itens": {
     "empadao": true,
-    "lasanha": false,
+    "lasanha": true,
     "escondidinho": false,
-    "macarrao": false,
+    "macarrao": true,
     "feijoada_ind": true,
     "dobradinha_ind": true,
     "sarapatel_ind": true,
@@ -26,7 +26,7 @@
     "fanta_lata": true,
     "coca_1l": true,
     "guarana_1l": true,
-    "coca_2l": true
+    "coca_2l": false
   },
   "promo": {
     "enabled": false,
