@@ -22,10 +22,7 @@
       for(const r of ranges){ const [a,b]=r.split('-'); if(mins>=toMinutes(a) && mins<=toMinutes(b)) return { open:true, today:ranges }; }
       return { open:false, today:ranges };
     }
-    function todayHoursLabel(){
-      // Texto fixo solicitado
-      return "sábados e domingos, das 11:00 às 15:00";
-    }
+    function todayHoursLabel(){ return "sábados e domingos, das 11:00 às 15:00"; }
 
     // ---------- Utilidades ----------
     const parseMoney = v => { if(!v) return 0; v=(''+v).replace('R$','').replace('.','').replace(',','.'); v=parseFloat(v); return isNaN(v)?0:v; };
@@ -49,6 +46,9 @@
         document.getElementById('pixName').textContent = PIX.name;
 
         this.recalc(); this.onTipoChange(); this.onPagamentoChange();
+
+        // aplica estoque (esgotados)
+        this.applyStock();
 
         // status aberto/fechado
         this.updateOpenStatus();
@@ -80,11 +80,43 @@
         if(btn) btn.disabled = true; // começa travado
         if(_isOpen){ this.updateSendState(); } // libera se aberto e requisitos OK
       },
-      chg(btn,delta){ const i=btn.parentElement.querySelector('input'); let v=parseInt(i.value||0)+delta; if(v<0) v=0; i.value=v; this.recalc(); },
+      applyStock(){
+        const sold = (window.ESGOTADOS || []);
+        document.querySelectorAll('.item').forEach(it=>{
+          const nameEl = it.querySelector('.name');
+          const name = nameEl?.textContent?.trim()?.toUpperCase() || "";
+          if(sold.includes(name)){
+            it.classList.add('soldout');
+            const input = it.querySelector('input[type="number"]');
+            const minus = it.querySelector('button:nth-of-type(1)');
+            const plus  = it.querySelector('button:nth-of-type(2)');
+            if(input){ input.value = 0; input.disabled = true; }
+            if(minus){ minus.disabled = true; }
+            if(plus){ plus.disabled = true; }
+            if(!it.querySelector('.badge-soldout')){
+              const badge = document.createElement('span');
+              badge.className = 'badge-soldout';
+              badge.textContent = 'ESGOTADO';
+              nameEl?.appendChild(badge);
+            }
+          }
+        });
+        this.recalc();
+      },
+      isSoldOutItem(btn){
+        const it = btn.closest('.item');
+        return it?.classList?.contains('soldout');
+      },
+      chg(btn,delta){
+        if(this.isSoldOutItem(btn)) return;
+        const i=btn.parentElement.querySelector('input');
+        let v=parseInt(i.value||0)+delta; if(v<0) v=0;
+        i.value=v; this.recalc();
+      },
       recalc(){
         const items=[...document.querySelectorAll('.item')]; let subtotal=0; const lines=[];
         items.forEach(it=>{ const q=parseInt(it.querySelector('input')?.value||0);
-          if(q>0){ const name=it.querySelector('.name').textContent.trim(); const price=parseFloat(it.querySelector('.price')?.dataset.price||'0'); subtotal+=price*q; lines.push({name,qty:q,price}); }});
+          if(q>0){ const name=it.querySelector('.name').childNodes[0].textContent.trim(); const price=parseFloat(it.querySelector('.price')?.dataset.price||'0'); subtotal+=price*q; lines.push({name,qty:q,price}); }});
         const taxa=parseMoney(document.getElementById('taxa').value);
         document.getElementById('cartItems').innerHTML = lines.length ? lines.map(l=>`• ${l.qty}× ${l.name} — ${formatBR(l.price)}`).join('<br>') : 'Nenhum item ainda.';
         document.getElementById('subtotal').textContent=formatBR(subtotal);
@@ -183,7 +215,7 @@
     .muted{color:var(--muted);font-size:13px}
     .item{display:grid;grid-template-columns:1fr 90px 90px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
     .item:last-child{border-bottom:0}
-    .name{font-weight:500}
+    .name{font-weight:600}
     .price{text-align:right;color:#333}
     .qty{display:flex;gap:6px;justify-content:flex-end;align-items:center}
     .qty button{width:28px;height:28px;border:1px solid #ccc;background:#fff;border-radius:8px;cursor:pointer}
@@ -198,6 +230,8 @@
     .btn[disabled]{opacity:.45;pointer-events:none}
     .pixbox{border:1px dashed var(--line);background:#fcfbf7;border-radius:12px;padding:10px;margin-top:8px}
     .hide{display:none}
+    .item.soldout{opacity:.55;pointer-events:none}
+    .badge-soldout{display:inline-block;margin-left:8px;padding:2px 6px;font-size:12px;border-radius:8px;background:#333;color:#fff}
   </style>
 </head>
 <body>
