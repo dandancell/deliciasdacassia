@@ -20,7 +20,7 @@
     "arroz_g": true,
     "farofa": true,
     "embalagem": true,
-    "pudim": true,
+    "pudim": false,
     "coca_lata": true,
     "guarana_lata": true,
     "fanta_lata": true,
