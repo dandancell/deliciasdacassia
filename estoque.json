@@ -2,7 +2,7 @@
   "itens": {
     "empadao": true,
     "lasanha": false,
-    "escondidinho": true,
+    "escondidinho": false,
     "macarrao": false,
     "feijoada_ind": true,
     "dobradinha_ind": true,
