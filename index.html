@@ -84,7 +84,7 @@
         const sold = (window.ESGOTADOS || []);
         document.querySelectorAll('.item').forEach(it=>{
           const nameEl = it.querySelector('.name');
-          const name = nameEl?.textContent?.trim()?.toUpperCase() || "";
+          const name = nameEl?.childNodes[0]?.textContent?.trim()?.toUpperCase() || "";
           if(sold.includes(name)){
             it.classList.add('soldout');
             const input = it.querySelector('input[type="number"]');
@@ -283,6 +283,29 @@
       <div class="item"><div class="name">DOBRADINHA</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
       <div class="item"><div class="name">SARAPATEL</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
       <div class="item"><div class="name">MARISCO</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
+    </section>
+
+    <section id="extras">
+      <h2>Porções Extras</h2>
+      <div class="item"><div class="name">ARROZ P</div><div class="price" data-price="4.00">R$ 4,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">ARROZ G</div><div class="price" data-price="8.00">R$ 8,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">FAROFA</div><div class="price" data-price="4.00">R$ 4,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">EMBALAGEM</div><div class="price" data-price="2.00">R$ 2,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
+    </section>
+
+    <section id="sobremesa">
+      <h2>Sobremesa</h2>
+      <div class="item"><div class="name">PUDIM DE LEITE</div><div class="price" data-price="7.00">R$ 7,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
+    </section>
+
+    <section id="bebidas">
+      <h2>Bebidas</h2>
+      <div class="item"><div class="name">COCA-COLA LATA 350 ML</div><div class="price" data-price="5.00">R$ 5,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">GUARANÁ ANTARCTICA LATA 350 ML</div><div class="price" data-price="5.00">R$ 5,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">FANTA LATA 350 ML</div><div class="price" data-price="5.00">R$ 5,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">COCA-COLA PET 1 L</div><div class="price" data-price="8.00">R$ 8,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">GUARANÁ ANTARCTICA PET 1 L</div><div class="price" data-price="8.00">R$ 8,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
+      <div class="item"><div class="name">COCA-COLA PET 2 L</div><div class="price" data-price="13.00">R$ 13,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
     </section>
   </main>
 
