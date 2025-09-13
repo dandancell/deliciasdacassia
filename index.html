@@ -40,11 +40,7 @@
     .ok{color:#0a7a0a;font-weight:700}
     .hide{display:none}
     .promo{background:#fff7d6;border:1px dashed #e5cf89;color:#5a4700;border-radius:12px;padding:10px;margin:10px 0;font-weight:600;text-align:center}
-
-    /* SOLD OUT */
-    .sold{opacity:.55}
-    .sold .price{ text-decoration: line-through; color:#999 }
-    .sold .qty{ display:none }
+    .sold{opacity:.55} .sold .price{ text-decoration: line-through; color:#999 } .sold .qty{ display:none }
     .sold .name::after{ content:"  (ESGOTADO)"; color:#a60000; font-weight:700; font-size:13px }
   </style>
 </head>
@@ -61,14 +57,14 @@
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;margin-bottom:6px">
       <div><span class="pill">Entrega conforme bairro</span></div>
-      <div style="text-align:right"><span class="pill">WhatsApp: (81) 99186-2247</span></div>
+      <div style="text-align:right"><span class="pill">WhatsApp: (81) 99479-8426</span></div>
     </div>
 
     <section id="pratos">
       <h2>Pratos Individuais</h2>
-      <div class="item" data-id="empadao"><div class="name">Mini Empadão de Frango com Requeijão</div><div class="price" data-price="18.00">R$ 18,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item" data-id="lasanha"><div class="name">Lasanha</div><div class="price" data-price="18.00">R$ 18,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
-      <div class="item" data-id="escondidinho"><div class="name">Escondidinho de Charque</div><div class="price" data-price="18.00">R$ 18,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="empadao"><div class="name">Mini Empadão de Frango com Requeijão</div><div class="price" data-price="20.00">R$ 20,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="lasanha"><div class="name">Lasanha</div><div class="price" data-price="20.00">R$ 20,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
+      <div class="item" data-id="escondidinho"><div class="name">Escondidinho de Charque</div><div class="price" data-price="20.00">R$ 20,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
       <div class="item" data-id="macarrao"><div class="name">Macarrão na Pressão</div><div class="price" data-price="15.00">R$ 15,00</div><div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="chg(this,1)">+</button></div></div>
     </section>
 
@@ -173,14 +169,13 @@
         <option value="cartao">Cartão (na entrega/retirada)</option>
       </select>
 
-      <!-- PIX só quando selecionado -->
       <div id="pixBox" class="pixbox hide">
         <div class="pixgrid">
-          <div><strong>Chave PIX:</strong> <span id="pixKey">81991862247</span></div>
+          <div><strong>Chave PIX:</strong> <span id="pixKey">032.552.024-00</span></div>
           <button class="copy" onclick="copyPix()">Copiar</button>
         </div>
         <div><strong>Banco:</strong> Stone</div>
-        <div><strong>Titular:</strong> Delícias da Cássia</div>
+        <div><strong>Titular:</strong> Cássia Bezerra dos Santos</div>
         <div class="small ok">Envie o comprovante para confirmar o pedido.</div>
       </div>
 
@@ -200,7 +195,6 @@
 </footer>
 
 <script>
-// ====== QUANTIDADE / CÁLCULO ======
 function chg(btn,delta){const i=btn.parentElement.querySelector('input'); let v=parseInt(i.value||0)+delta; if(v<0)v=0; i.value=v; recalc();}
 function parseMoney(v){ if(!v) return 0; v=(''+v).replace('R$','').replace('.','').replace(',','.'); v=parseFloat(v); return isNaN(v)?0:v; }
 function formatBR(n){ return 'R$ '+n.toFixed(2).replace('.',','); }
@@ -217,13 +211,7 @@ function recalc(){
   document.getElementById('total').textContent=formatBR(subtotal+(taxa||0));
   updateSendState();
 }
-
-// ====== ENTREGA / BAIRROS ======
-function onTipoChange(){
-  const tipo=document.getElementById('tipo').value;
-  document.getElementById('enderecoBox').classList.toggle('hide', tipo!=='entrega');
-  updateSendState();
-}
+function onTipoChange(){ const tipo=document.getElementById('tipo').value; document.getElementById('enderecoBox').classList.toggle('hide', tipo!=='entrega'); updateSendState(); }
 const BAIRROS = [
   { bairro: "Mustardinha", taxa: "3,00" },
   { bairro: "Mangueira", taxa: "4,00" },
@@ -255,8 +243,6 @@ function selecionarBairro(){
   recalc();
   updateSendState();
 }
-
-// ====== LIBERAR ENVIO ======
 function updateSendState(){
   const tipo=document.getElementById('tipo').value;
   const send=document.getElementById('sendBtn');
@@ -264,8 +250,6 @@ function updateSendState(){
   const hasBairro = !!document.getElementById('bairroSel').value;
   send.disabled = !hasBairro;
 }
-
-// ====== PAGAMENTO ======
 function onPagamentoChange(){
   const v=document.getElementById('pagamento').value;
   document.getElementById('trocoBox').classList.toggle('hide', v!=='dinheiro');
@@ -275,11 +259,9 @@ function copyPix(){
   const k = document.getElementById('pixKey').textContent.trim();
   navigator.clipboard.writeText(k).then(()=>{ alert('Chave PIX copiada!'); });
 }
-
-// ====== FINALIZAR (WhatsApp) ======
 function finalizar(){
   recalc();
-  const whats='5581991862247';
+  const whats='5581994798426';
   const tipo=document.getElementById('tipo').value;
   const nome=document.getElementById('nome').value.trim();
   const fone=document.getElementById('fone').value.trim();
@@ -306,15 +288,13 @@ function finalizar(){
   if(pagamento==='dinheiro' && troco){ msg+=` (troco para ${troco})`; }
   if(obs){ msg+=`%*Obs.:* ${obs}`; }
   if(pagamento==='pix'){ 
-    msg+=`%%*PIX para pagamento:*%• Chave: 81991862247%• Banco: Stone%• Titular: Delícias da Cássia`;
+    msg+=`%%*PIX para pagamento:*%• Chave: 032.552.024-00%• Banco: Stone%• Titular: Cássia Bezerra dos Santos`;
     msg+=`%%*Atenção:* o pedido será confirmado mediante o envio do comprovante.`;
   }
   const encoded=encodeURIComponent(msg.replaceAll('%','\n'));
   const url=`https://wa.me/${whats}?text=${encoded}`;
   window.open(url,'_blank');
 }
-
-// ====== ESTOQUE / PROMO / BRANDING ======
 async function carregarEstoque(){
   try{
     const r = await fetch('estoque.json?nocache='+Date.now(), {cache:'no-store'});
@@ -360,7 +340,6 @@ function aplicarBranding(b){
   document.getElementById('footerBrand').textContent =
     `Delícias da Cássia • ${loc} • © 2025 • Instagram: ${insta} • Atendimento ${hours}`;
 }
-// init
 populateBairroSelect();
 onTipoChange(); onPagamentoChange(); recalc(); carregarEstoque(); setInterval(carregarEstoque,60000);
 </script>
