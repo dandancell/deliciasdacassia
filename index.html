@@ -22,9 +22,9 @@
       for(const r of ranges){ const [a,b]=r.split('-'); if(mins>=toMinutes(a) && mins<=toMinutes(b)) return { open:true, today:ranges }; }
       return { open:false, today:ranges };
     }
-    function todayHoursLabel(tz, hoursMap){
-      const { dow } = nowInTZ(tz); const ranges = hoursMap[dow] || [];
-      return ranges.length ? ranges.join(' / ') : 'Fechado hoje';
+    function todayHoursLabel(){
+      // Texto fixo solicitado
+      return "sábados e domingos, das 11:00 às 15:00";
     }
 
     // ---------- Utilidades ----------
@@ -58,17 +58,19 @@
         const status = isOpenNow(TIMEZONE, BUSINESS_HOURS);
         _isOpen = status.open;
         const pill = document.getElementById('statusPill');
-        const today = todayHoursLabel(TIMEZONE, BUSINESS_HOURS);
         const banner = document.getElementById('closedBanner');
 
         if(status.open){
-          pill.textContent = "Aberto • " + today;
+          pill.textContent = "Aberto até as 15:00";
           pill.classList.remove('closed'); pill.classList.add('open');
           if(CLOSE_BEHAVIOR.showBanner && banner) banner.style.display='none';
         } else {
-          pill.textContent = "Fechado • " + today;
+          pill.textContent = "Fechado • Funcionamos aos sábados e domingos, das 11:00 às 15:00";
           pill.classList.remove('open'); pill.classList.add('closed');
-          if(CLOSE_BEHAVIOR.showBanner && banner){ banner.style.display='block'; document.getElementById('todayHoursText').textContent=today; }
+          if(CLOSE_BEHAVIOR.showBanner && banner){
+            banner.style.display='block';
+            document.getElementById('todayHoursText').textContent = todayHoursLabel();
+          }
         }
         this.enforceCheckoutBlock();
       },
@@ -209,7 +211,7 @@
 </header>
 
 <div id="closedBanner" class="pill" style="display:none; max-width:1100px; margin:10px auto; text-align:center; background:#fff3f0; border-color:#ffd6cc; color:#a23;">
-  Estamos fechados agora. Funcionamos <span id="todayHoursText"></span>.
+  Estamos fechados agora. Funcionamos <span id="todayHoursText">sábados e domingos, das 11:00 às 15:00</span>.
 </div>
 
 <div class="wrap grid">
@@ -247,29 +249,6 @@
       <div class="item"><div class="name">DOBRADINHA</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
       <div class="item"><div class="name">SARAPATEL</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
       <div class="item"><div class="name">MARISCO</div><div class="price" data-price="55.00">R$ 55,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
-    </section>
-
-    <section id="extras">
-      <h2>Porções Extras</h2>
-      <div class="item"><div class="name">ARROZ P</div><div class="price" data-price="4.00">R$ 4,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">ARROZ G</div><div class="price" data-price="8.00">R$ 8,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">FAROFA</div><div class="price" data-price="4.00">R$ 4,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">EMBALAGEM</div><div class="price" data-price="2.00">R$ 2,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
-    </section>
-
-    <section id="sobremesa">
-      <h2>Sobremesa</h2>
-      <div class="item"><div class="name">PUDIM DE LEITE</div><div class="price" data-price="7.00">R$ 7,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
-    </section>
-
-    <section id="bebidas">
-      <h2>Bebidas</h2>
-      <div class="item"><div class="name">COCA-COLA LATA 350 ML</div><div class="price" data-price="5.00">R$ 5,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">GUARANÁ ANTARCTICA LATA 350 ML</div><div class="price" data-price="5.00">R$ 5,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">FANTA LATA 350 ML</div><div class="price" data-price="5.00">R$ 5,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">COCA-COLA PET 1 L</div><div class="price" data-price="8.00">R$ 8,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">GUARANÁ ANTARCTICA PET 1 L</div><div class="price" data-price="8.00">R$ 8,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
-      <div class="item"><div class="name">COCA-COLA PET 2 L</div><div class="price" data-price="13.00">R$ 13,00</div><div class="qty"><button onclick="app.chg(this,-1)">−</button><input type="number" min="0" value="0"><button onclick="app.chg(this,1)">+</button></div></div>
     </section>
   </main>
 
