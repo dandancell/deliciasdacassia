@@ -1,6 +1,6 @@
-l// === CONFIG FINAIS ===
+// === CONFIG FINAIS (mobile-friendly) ===
 export const WHATS_DISPLAY = "(81) 99479-8426";
-export const WHATS_NUM = "5581994798426";
+export const WHATS_NUM = "5581994798426"; // wa.me precisa com DDI 55
 
 export const PIX = {
   key: "032.552.024-00",
@@ -16,7 +16,7 @@ export const BAIRROS = [
   { bairro: "San Martins", taxa: "5,00" }
 ];
 
-// Itens esgotados — escreva EXACTAMENTE como no site (caixa alta)
+// Itens esgotados — escreva EXACTAMENTE como aparece no site (caixa alta)
 export const ESGOTADOS = [
   "LASANHA",
   "COCA-COLA PET 2 L",
@@ -28,10 +28,10 @@ export const TIMEZONE = "America/Recife";
 export const BUSINESS_HOURS = {
   0: ["11:00-15:00"], // Domingo
   1: [],              // Segunda (fechado)
-  2: [],              // Terça
-  3: [],              // Quarta
-  4: [],              // Quinta
-  5: [],              // Sexta
+  2: [],              // Terça (fechado)
+  3: [],              // Quarta (fechado)
+  4: [],              // Quinta (fechado)
+  5: [],              // Sexta (fechado)
   6: ["11:00-15:00"]  // Sábado
 };
 
@@ -40,5 +40,5 @@ export const CLOSE_BEHAVIOR = {
   showBanner: true
 };
 
-// Mantém compatível com o index
+// Expor p/ index
 window.ESGOTADOS = ESGOTADOS;

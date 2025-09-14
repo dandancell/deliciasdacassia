@@ -1,211 +1,247 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Delícias da Cássia • Pedidos</title>
+
   <script type="module">
     import { WHATS_DISPLAY, WHATS_NUM, PIX, BAIRROS, TIMEZONE, BUSINESS_HOURS, CLOSE_BEHAVIOR } from "./config.js";
 
     // ---------- Horário ----------
-    function toMinutes(hhmm){ const [h,m]=hhmm.split(':').map(n=>parseInt(n,10)); return h*60+(m||0); }
+    function toMinutes(hhmm){ const [h,m]=hhmm.split(':').map(n=>parseInt(n||0,10)); return h*60+(m||0); }
     function nowInTZ(tz){
-      const fmt = new Intl.DateTimeFormat('pt-BR',{ timeZone: tz, hour:'2-digit', minute:'2-digit', weekday:'short' });
+      const fmt = new Intl.DateTimeFormat("pt-BR",{ timeZone: tz, hour:"2-digit", minute:"2-digit", weekday:"short" });
       const parts = Object.fromEntries(fmt.formatToParts(new Date()).map(p=>[p.type,p.value]));
       const map = { dom:0, seg:1, ter:2, qua:3, qui:4, sex:5, sáb:6, sab:6 };
-      const w = (parts.weekday||'').toLowerCase().slice(0,3);
-      return { dow: map[w] ?? new Date().getDay(), mins: toMinutes(`${parts.hour}:${parts.minute}`) };
+      const w = (parts.weekday||"").toLowerCase().slice(0,3);
+      return { dow: (map[w] ?? new Date().getDay()), mins: toMinutes(`${parts.hour}:${parts.minute}`) };
     }
     function isOpenNow(tz, hoursMap){
       const { dow, mins } = nowInTZ(tz);
       const ranges = hoursMap[dow] || [];
-      for(const r of ranges){ const [a,b]=r.split('-'); if(mins>=toMinutes(a) && mins<=toMinutes(b)) return { open:true, today:ranges }; }
+      for(const r of ranges){
+        const [a,b]=r.split("-");
+        if(mins>=toMinutes(a) && mins<=toMinutes(b)) return { open:true, today:ranges, ends:b };
+      }
       return { open:false, today:ranges };
     }
     function todayHoursLabel(){ return "sábados e domingos, das 11:00 às 15:00"; }
 
     // ---------- Utilidades ----------
     const parseMoney = v => { if(!v) return 0; v=(''+v).replace('R$','').replace('.','').replace(',','.'); v=parseFloat(v); return isNaN(v)?0:v; };
-    const formatBR = n => 'R$ '+n.toFixed(2).replace('.',',');
+    const formatBR = n => "R$ "+n.toFixed(2).replace(".",",");
+
+    // Normalização compatível com iOS (remove acentos)
+    const normalize = (s) => (s||"")
+      .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+      .replace(/\s+/g," ").trim().toUpperCase();
 
     let _isOpen = false;
 
     window.app = {
       cartLines: [],
+
       init(){
-        document.getElementById('whatsPill').textContent = "WhatsApp: " + WHATS_DISPLAY;
+        document.getElementById("whatsPill").textContent = "WhatsApp: " + WHATS_DISPLAY;
 
         // bairros
-        const sel = document.getElementById('bairroSel');
+        const sel = document.getElementById("bairroSel");
         sel.innerHTML = '<option value="">Selecione o bairro</option>';
-        BAIRROS.forEach(b=>{ const o=document.createElement('option'); o.value=b.bairro+'|'+b.taxa; o.textContent=b.bairro; sel.appendChild(o); });
+        BAIRROS.forEach(b=>{
+          const o=document.createElement("option");
+          o.value=b.bairro+"|"+b.taxa;
+          o.textContent=b.bairro;
+          sel.appendChild(o);
+        });
 
         // PIX
-        document.getElementById('pixKey').textContent = PIX.key;
-        document.getElementById('pixBank').textContent = PIX.bank;
-        document.getElementById('pixName').textContent = PIX.name;
+        document.getElementById("pixKey").textContent  = PIX.key;
+        document.getElementById("pixBank").textContent = PIX.bank;
+        document.getElementById("pixName").textContent = PIX.name;
 
         this.recalc(); this.onTipoChange(); this.onPagamentoChange();
-
-        // aplica estoque (esgotados)
         this.applyStock();
 
-        // status aberto/fechado
-        this.updateOpenStatus();
-        setInterval(()=>this.updateOpenStatus(), 60000);
+        try{
+          this.updateOpenStatus();
+          setInterval(()=>this.updateOpenStatus(), 60000);
+        }catch(e){
+          console.error(e);
+          const pill = document.getElementById("statusPill");
+          pill.textContent = "Não foi possível verificar horário";
+          pill.classList.add("closed");
+        }
       },
+
       updateOpenStatus(){
         const status = isOpenNow(TIMEZONE, BUSINESS_HOURS);
         _isOpen = status.open;
-        const pill = document.getElementById('statusPill');
-        const banner = document.getElementById('closedBanner');
+        const pill = document.getElementById("statusPill");
+        const banner = document.getElementById("closedBanner");
 
         if(status.open){
-          pill.textContent = "Aberto até as 15:00";
-          pill.classList.remove('closed'); pill.classList.add('open');
-          if(CLOSE_BEHAVIOR.showBanner && banner) banner.style.display='none';
+          pill.textContent = "Aberto até " + (status.ends || "15:00");
+          pill.classList.remove("closed"); pill.classList.add("open");
+          if(CLOSE_BEHAVIOR.showBanner && banner) banner.style.display = "none";
         } else {
-          pill.textContent = "Fechado • Funcionamos aos sábados e domingos, das 11:00 às 15:00";
-          pill.classList.remove('open'); pill.classList.add('closed');
+          pill.textContent = "Fechado • Funcionamos aos " + todayHoursLabel();
+          pill.classList.remove("open"); pill.classList.add("closed");
           if(CLOSE_BEHAVIOR.showBanner && banner){
-            banner.style.display='block';
-            document.getElementById('todayHoursText').textContent = todayHoursLabel();
+            banner.style.display="block";
+            document.getElementById("todayHoursText").textContent = todayHoursLabel();
           }
         }
         this.enforceCheckoutBlock();
       },
+
       enforceCheckoutBlock(){
         if(!CLOSE_BEHAVIOR.blockCheckout) return;
-        const btn = document.getElementById('sendBtn');
+        const btn = document.getElementById("sendBtn");
         if(btn) btn.disabled = true; // começa travado
         if(_isOpen){ this.updateSendState(); } // libera se aberto e requisitos OK
       },
+
       applyStock(){
-        const sold = (window.ESGOTADOS || []);
-        document.querySelectorAll('.item').forEach(it=>{
-          const nameEl = it.querySelector('.name');
-          const name = nameEl?.childNodes[0]?.textContent?.trim()?.toUpperCase() || "";
-          if(sold.includes(name)){
-            it.classList.add('soldout');
+        const sold = (window.ESGOTADOS || []).map(normalize);
+        document.querySelectorAll(".item").forEach(it=>{
+          const nameEl = it.querySelector(".name");
+          const raw = nameEl?.childNodes[0]?.textContent || nameEl?.textContent || "";
+          const name = normalize(raw);
+          const isSold = sold.includes(name) || sold.some(s => name.includes(s));
+          if(isSold){
+            it.classList.add("soldout");
             const input = it.querySelector('input[type="number"]');
-            const minus = it.querySelector('button:nth-of-type(1)');
-            const plus  = it.querySelector('button:nth-of-type(2)');
+            const minus = it.querySelector("button:nth-of-type(1)");
+            const plus  = it.querySelector("button:nth-of-type(2)");
             if(input){ input.value = 0; input.disabled = true; }
             if(minus){ minus.disabled = true; }
             if(plus){ plus.disabled = true; }
-            if(!it.querySelector('.badge-soldout')){
-              const badge = document.createElement('span');
-              badge.className = 'badge-soldout';
-              badge.textContent = 'ESGOTADO';
+            if(!it.querySelector(".badge-soldout")){
+              const badge = document.createElement("span");
+              badge.className = "badge-soldout";
+              badge.textContent = "ESGOTADO";
               nameEl?.appendChild(badge);
             }
           }
         });
         this.recalc();
       },
+
       isSoldOutItem(btn){
-        const it = btn.closest('.item');
-        return it?.classList?.contains('soldout');
+        const it = btn.closest(".item");
+        return it?.classList?.contains("soldout");
       },
+
       chg(btn,delta){
         if(this.isSoldOutItem(btn)) return;
-        const i=btn.parentElement.querySelector('input');
+        const i=btn.parentElement.querySelector("input");
         let v=parseInt(i.value||0)+delta; if(v<0) v=0;
         i.value=v; this.recalc();
       },
+
       recalc(){
-        const items=[...document.querySelectorAll('.item')]; let subtotal=0; const lines=[];
-        items.forEach(it=>{ const q=parseInt(it.querySelector('input')?.value||0);
-          if(q>0){ const name=it.querySelector('.name').childNodes[0].textContent.trim(); const price=parseFloat(it.querySelector('.price')?.dataset.price||'0'); subtotal+=price*q; lines.push({name,qty:q,price}); }});
-        const taxa=parseMoney(document.getElementById('taxa').value);
-        document.getElementById('cartItems').innerHTML = lines.length ? lines.map(l=>`• ${l.qty}× ${l.name} — ${formatBR(l.price)}`).join('<br>') : 'Nenhum item ainda.';
-        document.getElementById('subtotal').textContent=formatBR(subtotal);
-        document.getElementById('frete').textContent=formatBR(taxa||0);
-        document.getElementById('total').textContent=formatBR(subtotal+(taxa||0));
+        const items=[...document.querySelectorAll(".item")]; let subtotal=0; const lines=[];
+        items.forEach(it=>{
+          const q=parseInt(it.querySelector("input")?.value||0);
+          if(q>0){
+            const name=(it.querySelector(".name").childNodes[0].textContent||"").trim();
+            const price=parseFloat(it.querySelector(".price")?.dataset.price||"0");
+            subtotal+=price*q; lines.push({name,qty:q,price});
+          }
+        });
+        const taxa=parseMoney(document.getElementById("taxa").value);
+        document.getElementById("cartItems").innerHTML = lines.length ? lines.map(l=>`• ${l.qty}× ${l.name} — ${formatBR(l.price)}`).join("<br>") : "Nenhum item ainda.";
+        document.getElementById("subtotal").textContent=formatBR(subtotal);
+        document.getElementById("frete").textContent=formatBR(taxa||0);
+        document.getElementById("total").textContent=formatBR(subtotal+(taxa||0));
         this.cartLines = lines;
         this.updateSendState();
       },
+
       onTipoChange(){
-        const tipo=document.getElementById('tipo').value;
-        document.getElementById('enderecoBox').classList.toggle('hide', tipo!=='entrega');
+        const tipo=document.getElementById("tipo").value;
+        document.getElementById("enderecoBox").classList.toggle("hide", tipo!=="entrega");
         this.updateSendState();
       },
+
       selecionarBairro(){
-        const v=document.getElementById('bairroSel').value; let taxa='0,00';
-        if(v&&v.includes('|')) taxa=v.split('|')[1];
-        document.getElementById('taxa').value=taxa;
-        document.getElementById('taxaView').textContent='R$ '+taxa;
+        const v=document.getElementById("bairroSel").value; let taxa="0,00";
+        if(v&&v.includes("|")) taxa=v.split("|")[1];
+        document.getElementById("taxa").value=taxa;
+        document.getElementById("taxaView").textContent="R$ "+taxa;
         this.recalc();
       },
+
       onPagamentoChange(){
-        const v=document.getElementById('pagamento').value;
-        document.getElementById('trocoBox').classList.toggle('hide', v!=='dinheiro');
-        document.getElementById('pixBox').classList.toggle('hide', v!=='pix');
+        const v=document.getElementById("pagamento").value;
+        document.getElementById("trocoBox").classList.toggle("hide", v!=="dinheiro");
+        document.getElementById("pixBox").classList.toggle("hide", v!=="pix");
       },
+
       updateSendState(){
-        const btn=document.getElementById('sendBtn');
+        const btn=document.getElementById("sendBtn");
         if(!btn) return;
         if(CLOSE_BEHAVIOR.blockCheckout && !_isOpen){ btn.disabled=true; return; }
-        const tipo=document.getElementById('tipo').value;
-        if(tipo==='retirada'){ btn.disabled=false; return; }
-        const hasBairro=!!document.getElementById('bairroSel').value;
+        const tipo=document.getElementById("tipo").value;
+        if(tipo==="retirada"){ btn.disabled=false; return; }
+        const hasBairro=!!document.getElementById("bairroSel").value;
         btn.disabled=!hasBairro;
       },
-      copyPix(){ navigator.clipboard.writeText(PIX.key).then(()=>alert('Chave PIX copiada!')); },
+
+      copyPix(){ navigator.clipboard.writeText(PIX.key).then(()=>alert("Chave PIX copiada!")); },
+
       finalizar(){
-        if(CLOSE_BEHAVIOR.blockCheckout && !_isOpen){ alert('Estamos fechados agora. Funcionamos aos sábados e domingos, das 11:00 às 15:00.'); return; }
-        finalizar(){
-  if(CLOSE_BEHAVIOR.blockCheckout && !_isOpen){
-    alert('Estamos fechados agora...');
-    return;
-  }
+        if(CLOSE_BEHAVIOR.blockCheckout && !_isOpen){
+          alert("Estamos fechados agora. Funcionamos aos sábados e domingos, das 11:00 às 15:00.");
+          return;
+        }
 
-  // 🔽 Aqui adiciona a data e hora atuais
-  const agora = new Date();
-  const dataHora = agora.toLocaleString("pt-BR", { timeZone: TIMEZONE });
+        const nome=document.getElementById("nome").value.trim();
+        if(!nome){ alert("Informe seu nome."); return; }
+        const tipo=document.getElementById("tipo").value;
+        const bairroSel=document.getElementById("bairroSel");
+        const bairroTxt=bairroSel.options[bairroSel.selectedIndex]?.text||"";
+        if(tipo==="entrega" && !bairroTxt){ alert("Selecione o bairro."); return; }
 
-  let msg = `*Delícias da Cássia*\\n*Pedido Online*\\n`;
-  msg += `*Data/Hora:* ${dataHora}\\n`;  // <- Essa linha adiciona
-        const nome=document.getElementById('nome').value.trim();
-        if(!nome){ alert('Informe seu nome.'); return; }
-        const tipo=document.getElementById('tipo').value;
-        const bairroSel=document.getElementById('bairroSel');
-        const bairroTxt=bairroSel.options[bairroSel.selectedIndex]?.text||'';
-        if(tipo==='entrega' && !bairroTxt){ alert('Selecione o bairro.'); return; }
+        const subtotal = parseMoney(document.getElementById("subtotal").textContent);
+        const entrega  = parseMoney(document.getElementById("frete").textContent);
+        const total    = parseMoney(document.getElementById("total").textContent);
 
-        const subtotal = parseMoney(document.getElementById('subtotal').textContent);
-        const entrega  = parseMoney(document.getElementById('frete').textContent);
-        const total    = parseMoney(document.getElementById('total').textContent);
+        const cartLines = document.getElementById("cartItems").innerHTML.replaceAll("<br>","\n");
 
-        const cartLines = document.getElementById('cartItems').innerHTML.replaceAll('<br>','\n');
+        // Data/hora BR com timezone
+        const agora = new Date();
+        const dataHora = agora.toLocaleString("pt-BR", { timeZone: TIMEZONE });
 
         let msg = `*Delícias da Cássia*\n*Pedido Online*\n`;
+        msg += `*Data/Hora:* ${dataHora}\n`;
         msg += `*Cliente:* ${nome}\n`;
-        const fone=document.getElementById('fone').value.trim();
+        const fone=document.getElementById("fone").value.trim();
         if(fone) msg += `*WhatsApp:* ${fone}\n`;
-        msg += `*Tipo:* ${tipo==='entrega'?'Entrega':'Retirada'}\n`;
-        if(tipo==='entrega'){ msg += `*Endereço:* ${document.getElementById('rua').value.trim()}, ${bairroTxt}\n`; }
-        msg += `\n*Itens:*\n${cartLines||'-'}\n`;
-        msg += `\n*Subtotal:* R$ ${subtotal.toFixed(2).replace('.',',')}\n*Entrega:* R$ ${entrega.toFixed(2).replace('.',',')}\n*Total:* R$ ${total.toFixed(2).replace('.',',')}\n`;
-        const pag=document.getElementById('pagamento').value;
+        msg += `*Tipo:* ${tipo==="entrega"?"Entrega":"Retirada"}\n";
+        if(tipo==="entrega"){ msg += `*Endereço:* ${document.getElementById("rua").value.trim()}, ${bairroTxt}\n`; }
+        msg += `\n*Itens:*\n${cartLines||"-"}\n`;
+        msg += `\n*Subtotal:* R$ ${subtotal.toFixed(2).replace(".",",")}\n*Entrega:* R$ ${entrega.toFixed(2).replace(".",",")}\n*Total:* R$ ${total.toFixed(2).replace(".",",")}\n`;
+        const pag=document.getElementById("pagamento").value;
         msg += `\n*Pagamento:* ${pag.toUpperCase()}`;
-        const troco=document.getElementById('troco').value.trim();
-        if(pag==='dinheiro' && troco){ msg += ` (troco para ${troco})`; }
-        const obs=document.getElementById('obs').value.trim();
+        const troco=document.getElementById("troco").value.trim();
+        if(pag==="dinheiro" && troco){ msg += ` (troco para ${troco})`; }
+        const obs=document.getElementById("obs").value.trim();
         if(obs){ msg += `\n*Obs.:* ${obs}`; }
-        if(pag==='pix'){
+        if(pag==="pix"){
           msg += `\n\n*PIX para pagamento:*\n• Chave: ${PIX.key}\n• Banco: ${PIX.bank}\n• Titular: ${PIX.name}\n`;
           msg += `\n*Atenção:* o pedido será confirmado mediante o envio do comprovante.`;
         }
 
         const encoded = encodeURIComponent(msg);
-        window.open(`https://wa.me/${WHATS_NUM}?text=${encoded}`,'_blank');
-        alert('Pedido enviado!');
+        window.open(`https://wa.me/${WHATS_NUM}?text=${encoded}`,"_blank");
+        alert("Pedido enviado!");
         location.reload();
       }
     };
 
-    window.addEventListener('DOMContentLoaded', ()=> app.init());
+    window.addEventListener("DOMContentLoaded", ()=> app.init());
   </script>
 
   <style>
@@ -247,7 +283,7 @@
 </head>
 <body>
 <header>
-  <img src="logo.png" alt="Logo Delícias da Cássia">
+  <img src="logo.png" alt="Logo Delícias da Cássia" />
   <h1>DELÍCIAS DA CÁSSIA • Pedidos</h1>
   <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap">
     <span id="statusPill" class="pill">Verificando horário…</span>
@@ -335,22 +371,22 @@
       </select>
       <div id="enderecoBox" class="hide" style="margin-top:10px">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div><label>Rua</label><input id="rua" type="text" placeholder="Rua, nº"></div>
+          <div><label>Rua</label><input id="rua" type="text" placeholder="Rua, nº" /></div>
           <div><label>Bairro</label><select id="bairroSel" onchange="app.selecionarBairro()"></select></div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
-          <div><label>Complemento</label><input id="compl" type="text" placeholder="Apto/Casa/Ref."></div>
+          <div><label>Complemento</label><input id="compl" type="text" placeholder="Apto/Casa/Ref." /></div>
           <div><label>Taxa de entrega</label><div id="taxaView" class="pill" style="height:40px;display:flex;align-items:center;justify-content:center">R$ 0,00</div></div>
         </div>
-        <input id="taxa" type="hidden" value="0">
+        <input id="taxa" type="hidden" value="0" />
       </div>
     </div>
 
     <div style="margin-top:10px">
       <h2>Seus Dados</h2>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div><label>Nome</label><input id="nome" type="text" placeholder="Seu nome"></div>
-        <div><label>WhatsApp</label><input id="fone" type="tel" placeholder="(DDD) 9xxxx-xxxx"></div>
+        <div><label>Nome</label><input id="nome" type="text" placeholder="Seu nome" /></div>
+        <div><label>WhatsApp</label><input id="fone" type="tel" placeholder="(DDD) 9xxxx-xxxx" /></div>
       </div>
       <div style="margin-top:8px">
         <label>Observações</label>
@@ -375,7 +411,7 @@
 
       <div id="trocoBox" class="hide" style="margin-top:8px">
         <label>Troco para (R$)</label>
-        <input id="troco" type="text" placeholder="Ex.: 50,00">
+        <input id="troco" type="text" placeholder="Ex.: 50,00" />
       </div>
     </div>
 
