@@ -154,7 +154,18 @@
       copyPix(){ navigator.clipboard.writeText(PIX.key).then(()=>alert('Chave PIX copiada!')); },
       finalizar(){
         if(CLOSE_BEHAVIOR.blockCheckout && !_isOpen){ alert('Estamos fechados agora. Funcionamos aos sábados e domingos, das 11:00 às 15:00.'); return; }
+        finalizar(){
+  if(CLOSE_BEHAVIOR.blockCheckout && !_isOpen){
+    alert('Estamos fechados agora...');
+    return;
+  }
 
+  // 🔽 Aqui adiciona a data e hora atuais
+  const agora = new Date();
+  const dataHora = agora.toLocaleString("pt-BR", { timeZone: TIMEZONE });
+
+  let msg = `*Delícias da Cássia*\\n*Pedido Online*\\n`;
+  msg += `*Data/Hora:* ${dataHora}\\n`;  // <- Essa linha adiciona
         const nome=document.getElementById('nome').value.trim();
         if(!nome){ alert('Informe seu nome.'); return; }
         const tipo=document.getElementById('tipo').value;
