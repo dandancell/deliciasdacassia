@@ -14,21 +14,21 @@ export const PIX = {
 // Bairros e taxas (fixas)
 export const BAIRROS = [
   { bairro: "Mustardinha", taxa: "3,00" },
-  { bairro: "Mangueira", taxa: "4,00" },
-  { bairro: "Afogados", taxa: "4,00" },
-  { bairro: "Bongi", taxa: "4,00" },
+  { bairro: "Mangueira",   taxa: "4,00" },
+  { bairro: "Afogados",    taxa: "4,00" },
+  { bairro: "Bongi",       taxa: "4,00" },
   { bairro: "San Martins", taxa: "5,00" }
 ];
 
 // Controle de estoque simples (nomes EXACTOS em MAIÚSCULAS, como no cardápio)
-export const export const ESGOTADOS = [
+export const ESGOTADOS = [
   "LASANHA",
-  "FEIJOADA",
+  "FEIJOADA",            // deixe aqui só se quer mesmo bloquear FEIJOADA
   "COCA-COLA PET 2 L"
 ];
 
 // Horário de funcionamento: APENAS sábados e domingos, 11:00–15:00
-export const TIMEZONE = "America/Recife";
+export const TIMEZONE = "America/Recife"; // Recife (sem horário de verão)
 // 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sáb
 export const BUSINESS_HOURS = {
   0: ["11:00-15:00"], // Domingo
