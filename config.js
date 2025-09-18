@@ -22,7 +22,7 @@ export const BAIRROS = [
 
 // Controle de estoque simples (nomes EXACTOS em MAIÚSCULAS, como no cardápio)
 export const ESGOTADOS = [
-  " LASANHA ",
+  "LASANHA",
   "FEIJOADA"
 ];
 
