@@ -52,7 +52,7 @@
 
         // status aberto/fechado
         this.updateOpenStatus();
-        setInterval(()=>this.updateOpenStatus(), 60000);
+        setInterval(()=>this.updateOpenStatus(), 20000);
       },
       updateOpenStatus(){
         const status = isOpenNow(TIMEZONE, BUSINESS_HOURS);
