@@ -22,8 +22,7 @@ export const BAIRROS = [
 
 // Controle de estoque simples (nomes EXACTOS em MAIÚSCULAS, como no cardápio)
 export const ESGOTADOS = [
-  "LASANHA",
-  "FEIJOADA"
+  
 ];
 
 // Horário de funcionamento: APENAS sábados e domingos, 11:00–15:00
