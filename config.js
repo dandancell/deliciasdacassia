@@ -31,9 +31,9 @@ export const ESGOTADOS = [
 export const TIMEZONE = "America/Recife"; // Recife (sem horário de verão)
 // 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sáb
 export const BUSINESS_HOURS = {
-  0: ["11:00-15:30"], // Domingo
+  0: ["10:00-15:30"], // Domingo
   1: [], 2: [], 3: [], 4: [], 5: [],
-  6: ["11:00-15:30"]  // Sábado
+  6: ["10:00-15:30"]  // Sábado
 };
 
 // Fechado: bloquear pedido e mostrar banner
