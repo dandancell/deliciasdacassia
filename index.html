@@ -7,7 +7,7 @@
   <script type="module">
     import { WHATS_DISPLAY, WHATS_NUM, PIX, BAIRROS, TIMEZONE, BUSINESS_HOURS, CLOSE_BEHAVIOR } from "./config.js?v=10";
 
-    // ---------- Horário ----------
+    // ---------- Horário (dinâmico a partir do BUSINESS_HOURS do config.js) ----------
     function toMinutes(hhmm){ const [h,m]=hhmm.split(':').map(n=>parseInt(n,10)); return h*60+(m||0); }
     function nowInTZ(tz){
       const fmt = new Intl.DateTimeFormat('pt-BR',{ timeZone: tz, hour:'2-digit', minute:'2-digit', weekday:'short' });
@@ -16,13 +16,44 @@
       const w = (parts.weekday||'').toLowerCase().slice(0,3);
       return { dow: map[w] ?? new Date().getDay(), mins: toMinutes(`${parts.hour}:${parts.minute}`) };
     }
+    // Verifica se está aberto agora e retorna faixa ativa
     function isOpenNow(tz, hoursMap){
       const { dow, mins } = nowInTZ(tz);
       const ranges = hoursMap[dow] || [];
-      for(const r of ranges){ const [a,b]=r.split('-'); if(mins>=toMinutes(a) && mins<=toMinutes(b)) return { open:true, today:ranges }; }
-      return { open:false, today:ranges };
+      for(const r of ranges){
+        const [a,b]=r.split('-');
+        if(mins>=toMinutes(a) && mins<=toMinutes(b)) return { open:true, today:ranges, active:[a,b] };
+      }
+      return { open:false, today:ranges, active:null };
     }
-    function todayHoursLabel(){ return "sábados e domingos, das 11:00 às 15:00"; }
+    // Constrói label semanal com base no mapa (Sáb e Dom)
+    function weeklyHoursLabel(hoursMap){
+      const sat = (hoursMap[6] && hoursMap[6][0]) || null;
+      const sun = (hoursMap[0] && hoursMap[0][0]) || null;
+      const fmt = r => r ? r.replace('-', ' às ') : '';
+      if(sat && sun){
+        if(sat === sun){
+          return `sábados e domingos, das ${fmt(sat)}`;
+        }else{
+          return `sábados (das ${fmt(sat)}) e domingos (das ${fmt(sun)})`;
+        }
+      } else if (sat) {
+        return `aos sábados, das ${fmt(sat)}`;
+      } else if (sun) {
+        return `aos domingos, das ${fmt(sun)}`;
+      }
+      return 'nos dias e horários indicados';
+    }
+    // Descobre horário de fechamento “de hoje” (se aberto) ou o fim da 1ª janela de hoje
+    function closingTimeLabel(tz, hoursMap){
+      const { dow } = nowInTZ(tz);
+      const ranges = hoursMap[dow] || [];
+      if(!ranges.length) return null;
+      const nowStatus = isOpenNow(tz, hoursMap);
+      if(nowStatus.active) return nowStatus.active[1];
+      const [,end] = ranges[0].split('-');
+      return end || null;
+    }
 
     // ---------- Utilidades ----------
     const parseMoney = v => { if(!v) return 0; v=(''+v).replace('R$','').replace('.','').replace(',','.'); v=parseFloat(v); return isNaN(v)?0:v; };
@@ -60,16 +91,20 @@
         const pill = document.getElementById('statusPill');
         const banner = document.getElementById('closedBanner');
 
+        const weekLabel = weeklyHoursLabel(BUSINESS_HOURS);
+        const closeAt = closingTimeLabel(TIMEZONE, BUSINESS_HOURS); // ex: "15:30"
+
         if(status.open){
-          pill.textContent = "Aberto até as 15:00";
+          pill.textContent = closeAt ? `Aberto até as ${closeAt}` : 'Aberto';
           pill.classList.remove('closed'); pill.classList.add('open');
           if(CLOSE_BEHAVIOR.showBanner && banner) banner.style.display='none';
         } else {
-          pill.textContent = "Fechado • Funcionamos aos sábados e domingos, das 11:00 às 15:00";
+          pill.textContent = `Fechado • Funcionamos ${weekLabel}`;
           pill.classList.remove('open'); pill.classList.add('closed');
           if(CLOSE_BEHAVIOR.showBanner && banner){
             banner.style.display='block';
-            document.getElementById('todayHoursText').textContent = todayHoursLabel();
+            const th = document.getElementById('todayHoursText');
+            if (th) th.textContent = weekLabel;
           }
         }
         this.enforceCheckoutBlock();
@@ -153,7 +188,10 @@
       },
       copyPix(){ navigator.clipboard.writeText(PIX.key).then(()=>alert('Chave PIX copiada!')); },
       finalizar(){
-        if(CLOSE_BEHAVIOR.blockCheckout && !_isOpen){ alert('Estamos fechados agora. Funcionamos aos sábados e domingos, das 11:00 às 15:00.'); return; }
+        if(CLOSE_BEHAVIOR.blockCheckout && !_isOpen){
+          alert(`Estamos fechados agora. Funcionamos ${weeklyHoursLabel(BUSINESS_HOURS)}.`);
+          return;
+        }
 
         const nome=document.getElementById('nome').value.trim();
         if(!nome){ alert('Informe seu nome.'); return; }
@@ -244,8 +282,9 @@
   </div>
 </header>
 
+<!-- Banner fechado (texto é preenchido dinamicamente) -->
 <div id="closedBanner" class="pill" style="display:none; max-width:1100px; margin:10px auto; text-align:center; background:#fff3f0; border-color:#ffd6cc; color:#a23;">
-  Estamos fechados agora. Funcionamos <span id="todayHoursText">sábados e domingos, das 11:00 às 15:00</span>.
+  Estamos fechados agora. Funcionamos <span id="todayHoursText">aos sábados e domingos</span>.
 </div>
 
 <div class="wrap grid">
