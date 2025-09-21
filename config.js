@@ -23,7 +23,7 @@ export const BAIRROS = [
 // Controle de estoque simples (nomes EXACTOS em MAIÚSCULAS, como no cardápio)
 export const ESGOTADOS = [
   "MACARRÃO NA PRESSÃO", 
-  "",            // deixe aqui só se quer mesmo bloquear FEIJOADA
+  "SARAPATEL",            // deixe aqui só se quer mesmo bloquear FEIJOADA
   "COCA-COLA PET 2 L"
 ];
 
