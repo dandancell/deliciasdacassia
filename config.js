@@ -22,10 +22,10 @@ export const BAIRROS = [
 
 // Controle de estoque simples (nomes EXACTOS em MAIÚSCULAS, como no cardápio)
 export const ESGOTADOS = [
-  "MACARRÃO NA PRESSÃO", 
-  "SARAPATEL",            // deixe aqui só se quer mesmo bloquear FEIJOADA
-  "COCA-COLA PET 2 L",
-  "COCA-COLA PET 1 L"
+  "", 
+  "",            // deixe aqui só se quer mesmo bloquear FEIJOADA
+  "",
+  ""
 ];
 
 // Horário de funcionamento: APENAS sábados e domingos, 11:00–15:00
