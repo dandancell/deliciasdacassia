@@ -24,7 +24,8 @@ export const BAIRROS = [
 export const ESGOTADOS = [
   "MACARRÃO NA PRESSÃO", 
   "SARAPATEL",            // deixe aqui só se quer mesmo bloquear FEIJOADA
-  "COCA-COLA PET 2 L"
+  "COCA-COLA PET 2 L",
+  "COCA-COLA PET 1 L"
 ];
 
 // Horário de funcionamento: APENAS sábados e domingos, 11:00–15:00
