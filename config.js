@@ -24,7 +24,7 @@ export const BAIRROS = [
 export const ESGOTADOS = [
   "COCA-COLA PET 2 L", 
   "MACARRÃO NA PRESSÃO",            // deixe aqui só se quer mesmo bloquear FEIJOADA
-  "",
+  "PUDIM DE LEITE",
   ""
 ];
 
