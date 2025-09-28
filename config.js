@@ -25,7 +25,10 @@ export const ESGOTADOS = [
   "COCA-COLA PET 2 L", 
   "MACARRÃO NA PRESSÃO",            // deixe aqui só se quer mesmo bloquear FEIJOADA
   "PUDIM DE LEITE",
-  "LASANHA"
+  "LASANHA",
+  "COCA-COLA PET 1 L",
+  "
+
 ];
 
 // Horário de funcionamento: APENAS sábados e domingos, 11:00–15:00
