@@ -27,7 +27,7 @@ export const ESGOTADOS = [
   "PUDIM DE LEITE",
   "LASANHA",
   "COCA-COLA PET 1 L",
-  "
+  "GUARANÁ ANTARCTICA PET 1 L"
 
 ];
 
