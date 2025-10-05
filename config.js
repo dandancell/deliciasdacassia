@@ -25,7 +25,7 @@ export const ESGOTADOS = [
   "COCA-COLA PET 2 L", 
   "DOBRADINHA",            // deixe aqui só se quer mesmo bloquear FEIJOADA
   "PUDIM DE LEITE",
-  "",
+  "MARISCO",
   "COCA-COLA PET 1 L",
   ""
 
