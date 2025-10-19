@@ -26,7 +26,7 @@ export const ESGOTADOS = [
   "",            // deixe aqui só se quer mesmo bloquear FEIJOADA
   "PUDIM DE LEITE",
   "ESCONDIDINHO DE CHARQUE",
-  "",
+  "SARAPATEL",
   "LASANHA"
 
 ];
