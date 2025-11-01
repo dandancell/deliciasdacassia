@@ -26,7 +26,7 @@ export const ESGOTADOS = [
   "DOBRADINHA",            // deixe aqui só se quer mesmo bloquear FEIJOADA
   "PUDIM DE LEITE",
   "ESCONDIDINHO DE CHARQUE",
-  "",
+  "LASANHA DE FRANGO",
   "MACARRÃO NA PRESSÃO"
 
 ];
