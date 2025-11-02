@@ -23,11 +23,12 @@ export const BAIRROS = [
 // Controle de estoque simples (nomes EXACTOS em MAIÚSCULAS, como no cardápio)
 export const ESGOTADOS = [
   "COCA-COLA PET 2 L", 
-  "",            // deixe aqui só se quer mesmo bloquear FEIJOADA
+  "MINI EMPADÃO DE FRANGO C/ REQUEIJÃO",            // deixe aqui só se quer mesmo bloquear FEIJOADA
   "PUDIM DE LEITE",
   "SARAPATEL",
-  "",
-  "MACARRÃO NA PRESSÃO"
+  "LASANHA DE FRANGO",
+  "MACARRÃO NA PRESSÃO",
+  "MARISCO"
 
 ];
 
@@ -35,7 +36,7 @@ export const ESGOTADOS = [
 export const TIMEZONE = "America/Recife"; // Recife (sem horário de verão)
 // 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sáb
 export const BUSINESS_HOURS = {
-  0: ["09:00-15:00"], // Domingo
+  0: ["09:00-16:00"], // Domingo
   1: [], 2: [], 3: [], 4: [], 5: [],
   6: ["10:00-15:30"]  // Sábado
 };
