@@ -28,7 +28,7 @@ export const ESGOTADOS = [
   "",
   "",
   "MACARRÃO NA PRESSÃO",
-  "MARISCO"
+  ""
 
 ];
 
