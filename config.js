@@ -26,7 +26,7 @@ export const ESGOTADOS = [
   "SARAPATEL",            // deixe aqui só se quer mesmo bloquear FEIJOADA
   "PUDIM DE LEITE",
   "MINI EMPADÃO DE FRANGO C/ REQUEIJÃO",
-  "",
+  "ESCONDIDINHO DE CHARQUE",
   "MACARRÃO NA PRESSÃO",
   ""
 
