@@ -23,9 +23,9 @@ export const BAIRROS = [
 // Controle de estoque simples (nomes EXACTOS em MAIÚSCULAS, como no cardápio)
 export const ESGOTADOS = [
   "COCA-COLA PET 2 L", 
-  "",            // deixe aqui só se quer mesmo bloquear FEIJOADA
+  "ESCONDIDINHO DE CHARQUE",            // deixe aqui só se quer mesmo bloquear FEIJOADA
   "PUDIM DE LEITE",
-  "",
+  "LASANHA DE CARNE",
   "",
   "",
   ""
